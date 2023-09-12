@@ -29,7 +29,8 @@ const formDefaults = {
     required: false,
     placeholder: '',
     description: '',
-    default: ''
+    default: '',
+    rows: 10
   }
 };
 
