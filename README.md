@@ -8,15 +8,15 @@ easily be customized with your own forms.
 The integration supports creating your own forms via `json` configuration files.  Each form is defined in a separate
 configuration file saved in the integration's `forms` directory.  
 
-A configuration file has the following format:
+A configuration file has the following properties:
 
+**name** {string} _(Required)_ - The name of the form
 
-```
-name {string} (Required) - The name of the form
-recipient {string} (Optional) - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.
-description {string} (Optional) - A description of the form
-elements {array} (Required) - An array of form elements
-```
+**recipient** {string} _(Optional)_ - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.
+
+**description** {string} _(Optional)_ - A description of the form
+
+**elements** {array} _(Required)_ - An array of form elements
 
 The following is an example form with a single `textarea` element specified:
 
@@ -48,16 +48,19 @@ Each form is made up of one or more Form Elements which are specified within the
 
 ### input
 
-The `input` form element has the following attributes
+An `input` form element has the following properties:
 
-```
-type {string} (Required) - The type of form element (must be `input`)
-label {string} (Required) - The label (or name) of the input
-default {string} (default: "") - The default value of the input
-required {boolean} (default: false) - Whether the input is required for the form to be submitted
-placeholder {string} (default: "") - A short description of what the input is for.  This is displayed to the user when the input is empty.  For longer instructions we recommend using the `description` property.
-description {string} (default: "") - A longer description of what the input is for.  This is displayed below the input.
-```
+**type** {string} _(required)_ - The type of form element (must be `input`)
+
+**label** {string} _(required)_ - The label (or name) of the input
+
+**default** {string} _(default: "")_ - The default value of the input
+
+**required** {boolean} _(default: false)_ - Whether the input is required for the form to be submitted
+
+**placeholder** {string} _(default: "")_ - A short description of what the input is for.  This is displayed to the user when the input is empty.  For longer instructions we recommend using the `description` property.
+
+**description** {string} _(default: "")_ - A longer description of what the input is for.  This is displayed below the input.
 
 Example `input` form element with all options specified:
 
