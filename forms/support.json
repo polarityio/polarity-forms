@@ -1,0 +1,24 @@
+{
+  "name": "Support Request",
+  "description": "Let us know about an issue you're having",
+  "elements": [
+    {
+      "label": "Priority",
+      "type": "select",
+      "values": [
+        "Low - 24 Hours",
+        "Medium - 8 hours",
+        "High - 4 hours",
+        "Urgent - 1 hour"
+      ],
+      "default": "Low - 24 Hours",
+      "required": true
+    },
+    {
+      "label": "Problem Details",
+      "type": "textarea",
+      "placeholder": "Provide details about the issue you need support on",
+      "required":  true
+    }
+  ]
+}

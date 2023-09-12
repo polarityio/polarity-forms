@@ -1,0 +1,185 @@
+<div class="instructions-container d-flex align-items-center justify-content-between">
+  <div class="p-action expand-container" {{action "toggleIsExpanded"}}>
+    {{#if isExpanded}}
+      hide form{{fa-icon icon="chevron-up" fixedWidth=true}}
+    {{else}}
+      show form {{fa-icon icon="chevron-down" fixedWidth=true}}
+    {{/if}}
+  </div>
+  {{#if (not isExpanded)}}
+    <div class="mb-2">
+      Click "show form" to fill out and submit the form.
+    </div>
+  {{/if}}
+</div>
+
+{{!--
+   Multiple forms have been selected so we enable a drop down list to allow
+   the user to pick an interface to fill
+--}}
+
+<div class="integration-container {{if isExpanded 'visible' 'hidden'}}">
+  {{#if (gt forms.length 1)}}
+    <div class="input-container">
+      <label class="small ifta-label">Forms</label>
+      <select
+        class="ifta-field"
+        {{on "change" (pick "target.value" (set block "_state.selectedFormIndex"))}}
+        disabled={{block._state.isSending}}
+      >
+        {{#each forms as | form formIndex |}}
+          <option value="{{formIndex}}">
+            {{form.name}}
+          </option>
+        {{/each}}
+      </select>
+      {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
+    </div>
+  {{/if}}
+
+  <div class="form-container">
+    {{#let (get forms block._state.selectedFormIndex) as | selectedForm |}}
+      {{#if (or selectedForm.description selectedForm.name)}}
+        <div class="mb-2_5">
+          {{#if selectedForm.name}}
+            <div class="form-name">
+              {{selectedForm.name}}
+            </div>
+          {{/if}}
+          {{#if selectedForm.description}}
+            <div class="form-description">
+              {{{selectedForm.description}}}
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+      {{#each selectedForm.elements as | uiElement |}}
+        {{#if (eq uiElement.type "input")}}
+          <div class="input-container">
+            <label class="small ifta-label">
+              {{uiElement.label}}
+              {{#if uiElement.required}}
+                <span class="required">*</span>
+              {{/if}}
+            </label>
+            {{input
+              class=(concat "ifta-field" (if uiElement.error " error"))
+              value=uiElement.value
+              placeholder=(get uiElement "placeholder")
+              disabled=block._state.isSending
+              required=(if uiElement.required true false)
+            }}
+          </div>
+        {{else if (eq uiElement.type "textarea")}}
+          <div class="input-container text-area-container {{if block._state.isSending "disabled"}} {{if uiElement.error "error"}}">
+            <label class="small">
+              {{uiElement.label}}
+              {{#if uiElement.required}}
+                <span class="required">*</span>
+              {{/if}}
+            </label>
+            {{textarea
+              class="ifta-field"
+              rows=10
+              placeholder=(get uiElement "placeholder")
+              value=uiElement.value
+              disabled=block._state.isSending
+              required=(if uiElement.required true false)
+            }}
+          </div>
+        {{else if (eq uiElement.type "select")}}
+          <div class="input-container {{if uiElement.error "error"}}">
+            {{!--
+            <div>
+              Default: {{uiElement.default}}
+            </div>
+            <div>
+              value: {{uiElement.value}}
+            </div>
+            --}}
+            <label class="small ifta-label">
+              {{uiElement.label}}
+              {{#if uiElement.required}}
+                <span class="required">*</span>
+              {{/if}}
+            </label>
+            <select
+              class="ifta-field {{if uiElement.error "error"}}"
+              {{on "change" (pick "target.value" (set uiElement "value"))}}
+              required={{if uiElement.required true false}}
+              disabled={{block._state.isSending}}
+            >
+              {{#each uiElement.values as | value |}}
+                <option value="{{value}}" selected={{if (eq value uiElement.default) true}}>{{value}}</option>
+              {{/each}}
+            </select>
+            {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
+          </div>
+        {{else if (eq uiElement.type "block")}}
+          <div class="block-container">
+            {{#if uiElement.label}}
+              <label>
+                {{uiElement.label}}
+              </label>
+            {{/if}}
+            <div>
+              {{{uiElement.text}}}
+            </div>
+          </div>
+        {{else if (eq uiElement.type "links")}}
+          <div class="block-container">
+            {{#if uiElement.label}}
+              <label>
+                {{uiElement.label}}
+              </label>
+            {{/if}}
+            {{#each uiElement.links as | link |}}
+              <div class="link">
+                <a href="{{link.href}}" target="_blank">
+                  {{#if link.beforeIcon}}
+                    {{fa-icon icon=link.beforeIcon fixedWidth=true class="after-icon"}}
+                  {{/if}}
+                  {{link.text}}
+                  {{#if link.afterIcon}}
+                    {{fa-icon icon=link.afterIcon fixedWidth=true class="after-icon"}}
+                  {{/if}}
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        {{/if}}
+        {{#if uiElement.description}}
+          <div class="ui-description p-footnote">
+            {{{uiElement.description}}}
+          </div>
+        {{/if}}
+    {{/each}}
+    {{/let}}
+  </div>
+
+  <div class="d-flex flex-row justify-content-between align-items-center">
+    <div class="submit-status-message {{if statusMessageIsVisible 'visible' 'hidden'}}">
+      {{#if (eq statusMessageType "error")}}
+        {{fa-icon icon="exclamation-triangle" fixedWidth=true class="submit-error-icon"}}
+      {{else}}
+        {{fa-icon icon="check" fixedWidth=true class="submit-success-icon"}}
+      {{/if}}
+      {{statusMessage}}
+    </div>
+
+    {{!-- send RFI button --}}
+    <button
+      {{action "sendTasking"}}
+      class="p-btn btn btn-sm btn-light mt-1"
+      disabled={{block._state.isSending}}
+    >
+      {{#if block._state.isSending}}
+        {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
+      {{else}}
+        {{fa-icon icon="paper-plane" fixedWidth=true class="icon"}}
+        Submit
+      {{/if}}
+    </button>
+  </div>
+</div>
+

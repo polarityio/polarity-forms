@@ -1,0 +1,40 @@
+
+A tasking request has been received.
+
+<h2>Requestor</h2>
+<div>
+  Full Name: {{user.fullName}}
+</div>
+<div>
+  Email: {{user.email}}
+</div>
+<div>
+  Username: {{user.username}}
+</div>
+
+<h2>{{formName}}</h2>
+<div>
+  Entity: <strong>{{entity}}</strong>
+</div>
+{{#each fields as | field |}}
+  <div>
+    {{field.label}}: <strong>{{field.value}}</strong>
+  </div>
+{{/each}}
+
+<h2>Integrations</h2>
+At the time the request was submitted, {{user.fullName}} had search results from the following integrations:
+<ul>
+  {{#each integrationData as | integration |}}
+    <li>
+      <div>
+        {{integration.integrationName}}
+      </div>
+      <ul>
+        {{#each integration.summary as | tag |}}
+          <li>{{tag}}</li>
+        {{/each}}
+      </ul>
+    </li>
+  {{/each}}
+</ul>

@@ -1,0 +1,225 @@
+@red: #FF4559;
+@green: #7bc942;
+@dark-green: #63a830;
+
+.integration-container {
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+    height: 100%;
+    transition: opacity 0.3s linear;
+  }
+
+  &.hidden {
+    visibility: hidden;
+    opacity: 0;
+    height: 0px;
+    transition: visibility 0s 0.2s, opacity 0.2s linear, height 0.2s ease;
+  }
+}
+
+.btn {
+  font-size: 12px;
+  font-weight: 400;
+  height: 30px;
+  width: 100px;
+  padding: 0px;
+
+  .icon {
+    font-size: 12px;
+    color: #aaa;
+  }
+}
+
+.submit-status-message {
+  min-width: max-content;
+  padding: 5px;
+  border-radius: 3px;
+
+  .submit-success-icon {
+    color: @dark-green;
+  }
+
+  .submit-error-icon {
+    color: @red;
+  }
+
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.5s linear;
+  }
+
+  &.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.5s, opacity 0.5s linear;
+  }
+}
+
+.expand-container {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+}
+
+// IFTA STYLING
+
+.form-container {
+  .form-name {
+    margin: 0px 0px 8px 1px;
+    font-weight: 500;
+  }
+
+  .form-description {
+    margin: 0 0 0px 1px;
+  }
+}
+
+.ui-description {
+  margin: -10px 0 15px 3px;
+}
+
+.block-container {
+  margin-left: 1px;
+  margin-bottom: 15px;
+
+  label {
+    font-weight: 400;
+    font-size: 12px;
+  }
+
+  .after-icon {
+    font-size: 9px;
+  }
+
+  .link {
+    margin-bottom: 5px;
+
+    &:last-child {
+      margin-bottom: 0px
+    }
+  }
+
+
+}
+
+.input-container {
+  width: 100%;
+  position: relative;
+
+  &.text-area-container {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    z-index: 1;
+
+    &:focus-within {
+      -webkit-appearance: none;
+      outline: none;
+      color: #000000;
+      border-color: @green;
+      box-shadow: 0 0 0 0.2rem rgba(123, 201, 66, 0.25);
+    }
+
+    &.error {
+      border-color: @red;
+
+      &:focus-within {
+        border-color: @green !important;
+      }
+    }
+
+    textarea {
+      margin: 0px 10px 10px 10px;
+      border: none;
+      outline: none;
+      box-shadow: none;
+      padding: 0px;
+      width: calc(100% - 20px);
+
+      &.ifta-field:focus {
+        -webkit-appearance: none;
+        outline: none;
+        box-shadow: none;
+      }
+    }
+
+    label {
+      padding: 3px 10px 5px;
+      margin: 0px;
+    }
+  }
+
+  label {
+    display: block;
+
+    .required {
+      color: @red;
+    }
+  }
+
+  textarea::placeholder, input::placeholder {
+    color: #dfdfdf;
+  }
+
+  textarea:focus::placeholder, input:focus::placeholder {
+    color: transparent;
+  }
+
+  input {
+    cursor: text;
+  }
+
+  .ifta-label {
+    margin-bottom: -15px;
+    z-index: 1;
+    position: relative;
+    padding: 0px 10px 0 10px;
+    pointer-events: none;
+  }
+
+  .ifta-field {
+    border: 0;
+    border-radius: 6px;
+    padding: 15px 10px 5px;
+    margin: 0 0 15px;
+    width: 100%;
+    border: 1px solid #ccc;
+    line-height: 12px;
+
+    &.error {
+      border-color: @red;
+    }
+  }
+
+  .ifta-field:focus {
+    -webkit-appearance: none;
+    outline: none;
+    color: #000000;
+    border-color: @green;
+    box-shadow: 0 0 0 0.2rem rgba(123, 201, 66, 0.25);
+  }
+
+  select.ifta-field {
+    -webkit-appearance: none;
+    outline: none;
+    line-height: 16px;
+  }
+
+  &:focus-within label {
+    color: @dark-green !important;
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+  }
+
+  input:disabled, select:disabled, textarea:disabled, &.text-area-container.disabled {
+    background-color: #f6f6f3 !important;
+  }
+}
+
+

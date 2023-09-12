@@ -1,0 +1,175 @@
+'use strict';
+
+polarity.export = PolarityComponent.extend({
+  notificationsData: Ember.inject.service('notificationsData'),
+  currentUser: Ember.inject.service('currentUser'),
+  forms: Ember.computed.alias('block.data.details.forms'),
+  isExpanded: true,
+  statusMessageIsVisible: false,
+  statusMessageType: 'success', //valid values are 'success' and 'error'
+  errorMessage: '',
+  init() {
+    if (!this.get('block._state')) {
+      this.set('block._state', {});
+      this.set('block._state.isSending', false);
+      this.set('block._state.selectedFormIndex', 0);
+      this.set('block._state.submissionHistory', Ember.A());
+    }
+
+    if (!this.get('block.userOptions.showFormByDefault')) {
+      this.set('isExpanded', false);
+    }
+
+    // Set default values where applicable
+    this.get('forms').forEach((form, formIndex) => {
+      form.elements.forEach((element, elementIndex) => {
+        if (element.default) {
+          this.set(`forms.${formIndex}.elements.${elementIndex}.value`, element.default);
+        }
+      });
+    });
+
+    this._super(...arguments);
+  },
+  actions: {
+    toggleIsExpanded: function () {
+      this.toggleProperty('isExpanded');
+    },
+    sendTasking: function () {
+      this.sendEmail();
+    }
+  },
+  getIntegrationData() {
+    let entityData = [];
+    let notifications = this.notificationsData.getNotificationList();
+
+    if (notifications.length > 0) {
+      let currentNode = notifications.head;
+
+      while (currentNode) {
+        if (currentNode.primaryBlock.entity.value === this.get('block.entity.value')) {
+          console.info(currentNode);
+          let blocks = currentNode.blocks;
+          let polarityBlock = blocks.findBy('type', 'polarity');
+          let integrationBlocks = blocks.rejectBy('type', 'polarity');
+
+          if (integrationBlocks && integrationBlocks.length > 0) {
+            entityData = integrationBlocks.reduce((accum, block) => {
+              if (block.name !== 'Polarity Tasker') {
+                accum.push({
+                  integrationName: block.name,
+                  summary: block.data.summary
+                  //details: block.data.details
+                });
+              }
+              return accum;
+            }, []);
+          }
+        }
+        currentNode = currentNode.next;
+      }
+
+      console.info('Integration Data', entityData);
+    }
+
+    return entityData;
+  },
+  validateRequiredFields() {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let form = this.get(`forms.${selectedFormIndex}`);
+    let valid = true;
+
+    form.elements.forEach((element, elementIndex) => {
+      if (element.required && !element.value) {
+        this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, `${element.label} is a required field.`);
+        valid = false;
+      }
+    });
+
+    return valid;
+  },
+  showStatusMessage(message, type) {
+    this.set('statusMessage', message);
+    this.set('statusMessageType', type);
+    this.set('statusMessageIsVisible', true);
+    setTimeout(() => {
+      if (!this.isDestroyed) {
+        this.set('statusMessageIsVisible', false);
+      }
+    }, 2000);
+  },
+  clearElementErrors() {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let form = this.get(`forms.${selectedFormIndex}`);
+
+    form.elements.forEach((element, elementIndex) => {
+      this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, '');
+    });
+  },
+  resetFormValues() {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let form = this.get(`forms.${selectedFormIndex}`);
+
+    form.elements.forEach((element, elementIndex) => {
+      let defaultValue = element.default ? element.default : '';
+      this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.value`, defaultValue);
+      // let selectValues = this.get(`forms.${selectedFormIndex}.elements.${elementIndex}.values`);
+      // if (Array.isArray(selectValues)) {
+      //   alert('resetting select');
+      //   this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.values`, selectValues.sort().slice());
+      //   this.get('block').notifyPropertyChange(
+      //     'data.details.forms.${selectedFormIndex}.elements.${elementIndex}.values'
+      //   );
+      // }
+    });
+  },
+  sendEmail: function (vote) {
+    if (!this.validateRequiredFields()) {
+      this.showStatusMessage('Missing required fields', 'error');
+      return;
+    }
+
+    this.set('block._state.isSending', true);
+
+    const fields = [];
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    this.get(`forms.${selectedFormIndex}.elements`).forEach((element) => {
+      fields.push({
+        label: element.label,
+        value: element.value
+      });
+    });
+
+    const payload = {
+      action: 'SUBMIT_TASKING',
+      entity: this.get('block.entity.value'),
+      integrationData: this.getIntegrationData(),
+      fileName: this.get(`forms.${selectedFormIndex}.fileName`),
+      formName: this.get(`forms.${selectedFormIndex}.name`),
+      formDescription: this.get(`forms.${selectedFormIndex}.description`),
+      fields,
+      user: {
+        email: this.currentUser.user.email,
+        fullName: this.currentUser.user.fullName,
+        username: this.currentUser.user.username
+      }
+    };
+
+    this.sendIntegrationMessage(payload)
+      .then((response) => {
+        // If the submission was successful save the information in case the user wants to review it
+        this.get('block._state.submissionHistory').pushObject(payload);
+        this.showStatusMessage('Successfully submitted', 'success');
+      })
+      .catch(function (err) {
+        self.set('errorMessage', JSON.stringify(err, null, 2));
+      })
+      .finally(() => {
+        if (!this.isDestroyed) {
+          this.set('block._state.isSending', false);
+        }
+        this.clearElementErrors();
+        this.resetFormValues();
+      });
+  }
+});

@@ -1,0 +1,12 @@
+{
+  "name": "polarity-tasker",
+  "version": "3.0.0",
+  "main": "./integration.js",
+  "private": true,
+  "dependencies": {
+    "async": "^3.2.4",
+    "email-templates": "6.1.1",
+    "nodemailer": "^6.9.4",
+    "handlebars": "^4.7.8"
+  }
+}

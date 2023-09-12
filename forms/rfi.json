@@ -1,0 +1,36 @@
+{
+  "name": "Request for Information (RFI)",
+  "elements": [
+    {
+      "label": "Request Type",
+      "type": "select",
+      "values": [
+        "OSINT Analysis",
+        "AI Tasking",
+        "Clarification",
+        "Threat Assessment"
+      ],
+      "default": "OSINT Analysis",
+      "required": true,
+      "description": ""
+    },
+    {
+      "label": "Priority",
+      "type": "select",
+      "values": [
+        "Low - 24 hours",
+        "Medium - 8 hours",
+        "High - 4 hours",
+        "Urgent - 1 hour"
+      ],
+      "default": "Low - 24 hours",
+      "required": true
+    },
+    {
+      "label": "RFI Details",
+      "type": "textarea",
+      "placeholder": "Provide details about the RFI",
+      "required":  true
+    }
+  ]
+}
