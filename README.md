@@ -1,39 +1,193 @@
-# Polarity Tasker Integration
+# Polarity Forms Integration
 
-# User Interface Creation
+The Polarity Forms integration enables users to submit form based feedback/requests via email.  The integration can
+easily be customized with your own forms.
 
-Inputs
+# Form Creation
+
+The integration supports creating your own forms via `json` configuration files.  Each form is defined in a separate
+configuration file saved in the integration's `forms` directory.  
+
+A configuration file has the following format:
+
+
+```
+name {string} (Required) - The name of the form
+recipient {string} (Optional) - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.
+description {string} (Optional) - A description of the form
+elements {array} (Required) - An array of form elements
+```
+
+The following is an example form with a single `textarea` element specified:
 
 ```
 {
-  "type": "input"
+  "name": "Support Request",
+  "recipient": "support@company.internal",
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
 }
 ```
 
-Inputs support the following properties:
+## Form Elements
 
-### label {string} (Required)
+Each form is made up of one or more Form Elements which are specified within the `elements` array of the form configuration.  The following form elements are supported:
 
-The label (or name) for the input. Should be be short and descriptive of what the input is for.
+* input -- A text input box
+* select -- A drop-down select box
+* textarea -- A multi-line text input box
+* links -- a list of links
+* block -- a block of text to include HTML
 
-### required {boolean} (default: false)
+### input
 
-Whether the user is required to fill-in the input.
+The `input` form element has the following attributes
 
-### placeholder {string} (default: "")
+```
+type {string} (Required) - The type of form element (must be `input`)
+label {string} (Required) - The label (or name) of the input
+default {string} (default: "") - The default value of the input
+required {boolean} (default: false) - Whether the input is required for the form to be submitted
+placeholder {string} (default: "") - A short description of what the input is for.  This is displayed to the user when the input is empty.  For longer instructions we recommend using the `description` property.
+description {string} (default: "") - A longer description of what the input is for.  This is displayed below the input.
+```
 
-A short description of what the input is for. This is displayed to the user when the input is empty. For longer
-instructions we recommend using the `description` property.
+Example `input` form element with all options specified:
 
-### description {string} (default: "")
+```
+{
+  "type": "input",
+  "label": "Subject",
+  "required": true,
+  "default": "My Subject",
+  "placeholder": "Short description of the issue",
+  "description": "Provide a short description of the issue you are experiencing"
+}
+```
+### textarea
 
-A longer description of what the input is for. This is displayed below the input.
+The `textarea` form element has the following attributes
 
-> We do not recommend specifying both a `placeholder` and `description` property as it can clutter the interface.
+```
+type {string} (Required) - The type of form element (must be `textarea`)
+label {string} (Required) - The label (or name) of the textarea
+default {string} (default: "") - The default value of the textarea
+required {boolean} (default: false) - Whether the textarea is required for the form to be submitted
+placeholder {string} (default: "") - A short description of what the textarea is for.  This is displayed to the user when the input is empty.  For longer instructions we recommend using the `description` property.
+description {string} (default: "") - A longer description of what the textarea is for.  This is displayed below the textarea.
+rows {number} (default: 10) - The number of rows of text to display in the textarea
+```
 
-### defaultValue {string} (default: "")
+Example `textarea` form element:
 
-A default value for the input.
+```
+{
+  "type": "textarea",
+  "label": "Description",
+  "required": true,
+  "placeholder": "Detailed description of the issue",
+  "description": "Provide a detailed description of the issue you are experiencing",
+  "rows": 5
+}
+```
+
+### select
+
+The `select` form element has the following attributes
+
+```
+type {string} (Required) - The type of form element (must be `select`)
+label {string} (Required) - The label (or name) of the select box
+default {string} (default: "") - The default value of the select box
+required {boolean} (default: false) - Whether the select box is required for the form to be submitted
+description {string} (default: "") - A longer description of what the select box is for.  This is displayed below the select box.
+values {array} (Required) - An array of options to display in the select box
+```
+
+Example `select` form element with all options specified:
+
+```
+{
+  "type": "select",
+  "label": "Severity",
+  "required": true,
+  "description": "Select the severity of the issue you are experiencing",
+  "values": [
+    "Low - 24 Hours",
+    "Medium - 8 hours",
+    "High - 4 hours",
+    "Urgent - 1 hour"
+  ],
+  "default": "Low - 24 Hours"
+}
+```
+
+### links
+
+The `links` form element is used to display link information to the user.  The `links` form element has the following attributes:
+
+```
+type {string} (Required) - The type of form element (must be `links`)
+label {string} - The label for the links
+links {array} (Required) - An array of link objects to display.    
+```
+
+A link object can contain the following attributes:
+
+```
+text {string} - The text to display for the link.  If not provided, the link will display the `href` value.
+href {string} - The URL to link to (supports mailto: links)
+afterIcon {string} - The name of a Font Awesome icon to display after the link
+beforeIcon  {string} - The name of a Font Awesome icon to display before the link
+```
+
+Example `links` form element with all options specified:
+
+```
+{
+  "type": "links",
+  "label": "Useful Links",
+  "links": [
+    {
+      "text": "Open Google",
+      "href": "https://www.google.com",
+      "afterIcon": "external-link-alt"
+    },
+    {
+      "text": "Send us an email",
+      "href": "mailto:support@customer.internal",
+      "beforeIcon": "envelope"
+    }
+  ]
+}
+```
+
+### block
+
+The `block` form element is used to display general information to the user and is not an interactive form element.  The `block` form element has the following attributes:
+
+```
+type {string} (Required) - The type of form element (must be `block`)
+label {string} - The label (or name) of the block
+text {string} (Required) - The text to display in the block (also supports html)
+```
+
+Example `block` form element with all options specified:
+
+```
+{
+  "type": "block",
+  "label": "Block of Text",
+  "text": "This is a block of text that can contain <b>html</b>"
+}
+```
 
 ## About Polarity
 
