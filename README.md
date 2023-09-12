@@ -3,6 +3,16 @@
 The Polarity Forms integration enables users to submit form based feedback/requests via email.  The integration can
 easily be customized with your own forms.
 
+# Data
+
+When a form is submitted by a user, the submitted form will include the following information:
+
+* Username
+* User Email
+* User FullName
+* Integrations that returned results for the user including summary tags (if enabled)
+* Custom Form Data
+
 # Integration Options
 
 ### SMTP Host
