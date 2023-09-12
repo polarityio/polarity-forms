@@ -1,6 +1,6 @@
 {
-  "name": "polarity-tasker",
-  "version": "3.0.0",
+  "name": "polarity-forms",
+  "version": "3.0.1",
   "main": "./integration.js",
   "private": true,
   "dependencies": {

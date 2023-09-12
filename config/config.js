@@ -1,12 +1,12 @@
 module.exports = {
-  name: 'Polarity Tasker',
-  acronym: 'TASK',
-  description: 'Send a tasking request for additional information on an entity of interest.',
+  name: 'Polarity Forms',
+  acronym: 'FORM',
+  description: 'Display customized forms to users for gathering user feedback or input.',
   logging: {
     level: 'trace' //trace, debug, info, warn, error, fatal
   },
   styles: ['./styles/style.less'],
-  entityTypes: ['domain', 'IP', 'url', 'hash', 'cve'],
+  entityTypes: ['*'],
   block: {
     component: {
       file: './components/block.js'
@@ -38,7 +38,7 @@ module.exports = {
     {
       key: 'smtpUser',
       name: 'SMTP User',
-      description: 'Your SMTP username.  Leave blank for unauthenticated SMTP servers',
+      description: 'Your SMTP username.  Leave blank for unauthenticated SMTP servers.',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -47,7 +47,7 @@ module.exports = {
     {
       key: 'smtpPassword',
       name: 'SMTP Server Password',
-      description: 'Your SMTP server port.',
+      description: 'Your SMTP password. Leave blank for unauthenticated SMTP servers.',
       default: '',
       type: 'password',
       userCanEdit: false,
@@ -58,18 +58,18 @@ module.exports = {
       name: 'SMTP Connection Security',
       description: 'The type of connection security to use when connecting to the SMTP server.',
       default: {
-        value: 'tls',
-        display: 'TLS'
+        value: 'none',
+        display: 'Default (STARTTLS used if supported by the SMTP Server)'
       },
       type: 'select',
       options: [
         {
           value: 'none',
-          display: 'None (STARTTLS used if supported)'
+          display: 'Default (STARTTLS used if supported by the SMTP Server)'
         },
         {
           value: 'starttls',
-          display: 'STARTTLS (force STARTTLS)'
+          display: 'Force STARTTLS (force use of STARTTLS)'
         },
         {
           value: 'tls',
@@ -83,8 +83,8 @@ module.exports = {
     {
       key: 'recipient',
       name: 'Default Recipient Email Address',
-      description: 'The default email address to send tasking requests to if a form does not specify a recipient.',
-      default: 'customersuccess@polarity.io',
+      description: 'The default email address to send form submissions to if a form configuration does not specify a recipient.',
+      default: '',
       type: 'text',
       userCanEdit: false,
       adminOnly: true
@@ -101,8 +101,8 @@ module.exports = {
     },
     {
       key: 'forms',
-      name: 'Form Names',
-      description: 'A comma delimited list of form names you intend to use when interacting with this integration',
+      name: 'Enabled Forms',
+      description: 'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
       default: 'default',
       type: 'text',
       userCanEdit: false,
@@ -111,7 +111,8 @@ module.exports = {
     {
       key: 'showFormByDefault',
       name: 'Show Forms By Default',
-      description: 'If checked, the integration will show the forms by default.  If unchecked, the user will need to click to expand and view the forms.',
+      description:
+        'If checked, the integration will show the forms by default.  If unchecked, the user will need to click to expand and view the forms.',
       default: true,
       type: 'boolean',
       userCanEdit: true,
