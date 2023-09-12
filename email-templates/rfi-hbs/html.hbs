@@ -1,5 +1,4 @@
-
-A tasking request has been received.
+<h1>Form Submission Received</h1>
 
 <h2>Requestor</h2>
 <div>
@@ -14,11 +13,11 @@ A tasking request has been received.
 
 <h2>{{formName}}</h2>
 <div>
-  Entity: <strong>{{entity}}</strong>
+  <strong>Entity</strong>: {{entity}}
 </div>
 {{#each fields as | field |}}
   <div>
-    {{field.label}}: <strong>{{field.value}}</strong>
+    <strong>{{field.label}}</strong>: {{field.value}}
   </div>
 {{/each}}
 

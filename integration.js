@@ -47,9 +47,19 @@ function startup(logger) {
 }
 
 function maybeInitSmtp(options) {
-  if (smtpClient === null || emailer === null) {
-    Logger.info('Initializing SMTP Client and Emailer');
-    setupEmailer(options);
+  if (
+    (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') &&
+    smtpClient === null
+  ) {
+    Logger.info('Initializing SMTP Client');
+    setupSmtpClient(options);
+  }
+}
+
+function maybeSetupTemplateBuilder() {
+  if (emailer === null) {
+    Logger.info('Initializing Template Builder');
+    setupTemplateBuilder();
   }
 }
 
@@ -57,6 +67,7 @@ function doLookup(entities, options, cb) {
   Logger.trace({ entities, options }, 'doLookup');
 
   maybeInitSmtp(options);
+  maybeSetupTemplateBuilder();
 
   try {
     maybeLoadForms(options);
@@ -73,7 +84,7 @@ function doLookup(entities, options, cb) {
       lookupResults.push({
         entity: entityObj,
         data: {
-          summary: ['Polarity Tasker'], // summary is set via custom summary template
+          summary: [], // summary is set via custom summary template
           details: {
             target: entityObj.value, // date is formatted via the template
             forms
@@ -88,16 +99,7 @@ function doLookup(entities, options, cb) {
   cb(null, lookupResults);
 }
 
-function setupEmailer(options) {
-  emailer = new Email({
-    views: {
-      root: './email-templates',
-      options: {
-        extension: 'hbs'
-      }
-    }
-  });
-
+function setupSmtpClient(options) {
   const smtpOptions = {
     host: options.smtpHost,
     port: options.smtpPort
@@ -133,6 +135,17 @@ function setupEmailer(options) {
   smtpClient = nodemailer.createTransport(smtpOptions);
 }
 
+function setupTemplateBuilder() {
+  emailer = new Email({
+    views: {
+      root: './email-templates',
+      options: {
+        extension: 'hbs'
+      }
+    }
+  });
+}
+
 function getRecipient(fileName, options) {
   if (formsByFileName[fileName] && formsByFileName[fileName].recipient) {
     return formsByFileName[fileName].recipient;
@@ -141,17 +154,32 @@ function getRecipient(fileName, options) {
   }
 }
 
-async function sendEmail({ user, entity, integrationData, formName, fields, fileName }, options) {
-  Logger.trace({ user, entity, integrationData, formName, fields }, 'Building template');
+function getEmailSubject(fileName) {
+  if (formsByFileName[fileName] && formsByFileName[fileName].subject) {
+    Logger.info({ fileName, subject: formsByFileName[fileName].subject }, 'Using custom subject');
+    return formsByFileName[fileName].subject;
+  } else {
+    return 'Polarity Form Submission';
+  }
+}
+
+async function getTemplate({ user, entity, integrationData, formName, fields, fileName }) {
+  let subject = getEmailSubject(fileName);
+  Logger.trace({ user, entity, integrationData, formName, fields, fileName, subject }, 'Building template');
 
   const template = await emailer.renderAll('rfi-hbs', {
     integrationData,
     entity,
     user,
     formName,
-    fields
+    fields,
+    subject
   });
 
+  return template;
+}
+
+async function sendEmail(template, user, fileName, options) {
   const emailSettings = {
     text: template.text,
     from: `"${user.fullName}" <${user.email}>`,
@@ -219,10 +247,12 @@ function maybeLoadForms(options) {
 function validateRequiredFields(elementType, availableFields) {
   const requiredFields = formRequiredFields[elementType];
 
-  if(!requiredFields){
+  if (!requiredFields) {
     throw {
-      detail: `The form element of type "${elementType}" is not supported.  Please use one of the following types: ${Object.keys(formRequiredFields).join(', ')}`
-    }
+      detail: `The form element of type "${elementType}" is not supported.  Please use one of the following types: ${Object.keys(
+        formRequiredFields
+      ).join(', ')}`
+    };
   }
 
   requiredFields.forEach((requiredField) => {
@@ -257,9 +287,19 @@ async function onMessage(payload, options, cb) {
   Logger.trace({ payload }, 'onMessage');
 
   maybeInitSmtp(options);
+  maybeSetupTemplateBuilder();
 
   try {
-    await sendEmail(payload, options);
+    const template = await getTemplate(payload, options);
+
+    if (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') {
+      await sendEmail(template, payload.user, payload.fileName, options);
+    }
+
+    if (options.deliveryMethod.value === 'log' || options.deliveryMethod.value === 'emailAndLog') {
+      Logger.info(template.text, 'Form submitted');
+    }
+
     cb(null, {
       detail: 'Success'
     });
@@ -273,8 +313,51 @@ async function onMessage(payload, options, cb) {
   }
 }
 
+async function validateSmtpOptions(userOptions) {
+  return new Promise((resolve, reject) => {
+    let errors = [];
+    let formattedOptions = {};
+    for (const option in userOptions) {
+      formattedOptions[option] = userOptions[option].value;
+    }
+
+    setupSmtpClient(formattedOptions);
+    setupTemplateBuilder();
+
+    Logger.trace({ formattedOptions }, 'Validating SMTP Options');
+
+    smtpClient.verify((smtpError, success) => {
+      if (smtpError) {
+        let smtpKeys = ['smtpHost', 'smtpPort', 'smtpConnectionSecurity'];
+        if (userOptions.smtpUser.value.length > 0 || userOptions.smtpPassword.value.length > 0) {
+          smtpKeys.push('smtpUser', 'smtpPassword');
+        }
+        smtpKeys.forEach((key) => {
+          errors.push({
+            key,
+            message: `SMTP Connection Error: ${smtpError}`
+          });
+        });
+        Logger.error({ smtpError, polarityErrors: errors }, 'Got an error back');
+      }
+      resolve(errors);
+    });
+  });
+}
+
 async function validateOptions(userOptions, cb) {
+  Logger.trace({ userOptions }, 'Validating Options');
   let errors = [];
+
+  if (
+    typeof userOptions.recipient.value !== 'string' ||
+    (typeof userOptions.recipient.value === 'string' && userOptions.recipient.value.length === 0)
+  ) {
+    errors.push({
+      key: 'recipient',
+      message: 'You must provide a default recipient email address'
+    });
+  }
 
   if (
     typeof userOptions.forms.value !== 'string' ||
@@ -298,22 +381,11 @@ async function validateOptions(userOptions, cb) {
     });
   }
 
-  let formattedOptions = {};
-  for (const option in userOptions) {
-    formattedOptions[option] = userOptions[option].value;
+  if (userOptions.deliveryMethod.value.value === 'email' || userOptions.deliveryMethod.value.value === 'emailAndLog') {
+    errors = errors.concat(await validateSmtpOptions(userOptions));
   }
 
-  setupEmailer(formattedOptions);
-
-  smtpClient.verify((error, success) => {
-    if (error) {
-      errors.push({
-        key: 'smtpHost',
-        message: `SMTP Connection Error: ${error}`
-      });
-    }
-    cb(null, errors);
-  });
+  cb(null, errors);
 }
 
 module.exports = {

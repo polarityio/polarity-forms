@@ -1,5 +1,6 @@
 {
   "name": "Request for Information (RFI)",
+  "subject": "Polarity RFI Received",
   "elements": [
     {
       "label": "Request Type",

@@ -18,6 +18,33 @@ module.exports = {
   onDemandOnly: true,
   options: [
     {
+      key: 'deliveryMethod',
+      name: 'Form Delivery Method',
+      description: 'Choose how form data should be delivered.  The default is "Email".',
+      default: {
+        value: 'email',
+        display: 'Email - form data will be sent to the configured email address (SMTP settings must be configured)'
+      },
+      type: 'select',
+      options: [
+        {
+          value: 'email',
+          display: 'Email - form data will be sent to the configured email address (SMTP settings must be configured)'
+        },
+        {
+          value: 'log',
+          display: 'Log File - form data will be logged as JSON in the integration log file'
+        },
+        {
+          value: 'emailAndLog',
+          display: 'Email and Log File - form data will be sent via email and logged (SMTP settings must be configured)'
+        }
+      ],
+      multiple: false,
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'smtpHost',
       name: 'SMTP Host',
       description: 'Your SMTP server hostname.',
@@ -91,9 +118,9 @@ module.exports = {
     },
     {
       key: 'includeIntegrationNames',
-      name: 'Include Integration Names',
+      name: 'Include Integration Names and Summary Tags',
       description:
-        'If checked, the email will include the name of integrations the user had access to when submitting the task',
+        'If checked, the email will include the name of integrations the user had access to when submitting the form as well as summary tags.',
       default: true,
       type: 'boolean',
       userCanEdit: false,

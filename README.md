@@ -35,9 +35,9 @@ Options are:
 
 The default email address to send form submissions to if a form configuration does not specify a recipient.
 
-### Include Integration Names 
+### Include Integration Names and Summary Tags
 
-If checked,  the name of integrations the user had access to when submitting the form will be included in the received email.
+If checked, the email will include the name of integrations the user had access to when submitting the form as well as summary tags.
 
 ### Enabled Forms
 
@@ -61,6 +61,8 @@ A configuration file has the following properties:
 **name** {string} _(Required)_ - The name of the form
 
 **recipient** {string} _(Optional)_ - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.
+
+**subject** {string} _(Optional)_ - The subject of the email.  If not specified the subject will be "Polarity Form Submission".
 
 **description** {string} _(Optional)_ - A description of the form
 
