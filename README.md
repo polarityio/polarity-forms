@@ -1,7 +1,7 @@
 # Polarity Forms Integration
 
 The Polarity Forms integration enables users to submit form based feedback/requests via email.  The integration can
-easily be customized with your own forms.
+be easily customized with your own forms by providing custom form configurations.
 
 | ![](images/sample.png) | ![](/images/rfi.png) | ![](images/support.png) 
 |------------------------|----------------------|-------------------------|
