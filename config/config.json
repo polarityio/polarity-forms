@@ -11,6 +11,7 @@
   "entityTypes": [
     "*"
   ],
+  "defaultColor": "light-gray",
   "block": {
     "component": {
       "file": "./components/block.js"

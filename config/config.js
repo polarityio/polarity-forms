@@ -7,6 +7,7 @@ module.exports = {
   },
   styles: ['./styles/style.less'],
   entityTypes: ['*'],
+  defaultColor: 'light-gray',
   block: {
     component: {
       file: './components/block.js'
@@ -110,7 +111,8 @@ module.exports = {
     {
       key: 'recipient',
       name: 'Default Recipient Email Address',
-      description: 'The default email address to send form submissions to if a form configuration does not specify a recipient.',
+      description:
+        'The default email address to send form submissions to if a form configuration does not specify a recipient.',
       default: '',
       type: 'text',
       userCanEdit: false,
@@ -119,7 +121,8 @@ module.exports = {
     {
       key: 'forms',
       name: 'Enabled Forms',
-      description: 'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
+      description:
+        'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
       default: 'support, rfi, sample',
       type: 'text',
       userCanEdit: false,
@@ -138,7 +141,7 @@ module.exports = {
     {
       key: 'summaryTag',
       name: 'Summary Tag',
-      description: 'Customize the integration\'s summary tag',
+      description: "Customize the integration's summary tag",
       default: 'Polarity Form',
       type: 'text',
       userCanEdit: false,
