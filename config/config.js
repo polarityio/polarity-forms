@@ -120,7 +120,7 @@ module.exports = {
       key: 'forms',
       name: 'Enabled Forms',
       description: 'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
-      default: 'default',
+      default: 'support, rfi, sample',
       type: 'text',
       userCanEdit: false,
       adminOnly: true
