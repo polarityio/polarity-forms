@@ -37,6 +37,9 @@ polarity.export = PolarityComponent.extend({
     },
     sendTasking: function () {
       this.sendEmail();
+    },
+    closeError: function () {
+      this.set('errorMessage', '');
     }
   },
   getIntegrationData() {
@@ -129,6 +132,7 @@ polarity.export = PolarityComponent.extend({
       return;
     }
 
+    this.set('errorMessage', '');
     this.set('block._state.isSending', true);
 
     const fields = [];
@@ -161,8 +165,8 @@ polarity.export = PolarityComponent.extend({
         this.get('block._state.submissionHistory').pushObject(payload);
         this.showStatusMessage('Successfully submitted', 'success');
       })
-      .catch(function (err) {
-        self.set('errorMessage', JSON.stringify(err, null, 2));
+      .catch((err) => {
+        this.set('errorMessage', JSON.stringify(err, null, 2));
       })
       .finally(() => {
         if (!this.isDestroyed) {

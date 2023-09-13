@@ -157,6 +157,22 @@
     {{/let}}
   </div>
 
+  {{#if errorMessage}}
+    <div class="alert alert-danger error-message">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="error-message-title">
+          Error submitting form
+        </div>
+        <div>
+          {{fa-icon icon="times" fixedWidth=true click=(action "closeError") class="close-icon"}}
+        </div>
+      </div>
+      <div class="error-scrolling-container">
+        <pre>{{errorMessage}}</pre>
+      </div>
+    </div>
+  {{/if}}
+
   <div class="d-flex flex-row justify-content-between align-items-center">
     <div class="submit-status-message {{if statusMessageIsVisible 'visible' 'hidden'}}">
       {{#if (eq statusMessageType "error")}}
@@ -166,7 +182,6 @@
       {{/if}}
       {{statusMessage}}
     </div>
-
     {{!-- send RFI button --}}
     <button
       {{action "sendTasking"}}

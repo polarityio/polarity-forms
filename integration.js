@@ -305,9 +305,9 @@ async function onMessage(payload, options, cb) {
     });
   } catch (sendEmailError) {
     const jsonError = parseErrorToReadableJSON(sendEmailError);
-    Logger.error({ error: jsonError }, 'Error sending email');
+    Logger.error({ error: jsonError }, 'Error submitting form');
     cb({
-      detail: 'Error encountered submitting tasking',
+      detail: 'Error encountered submitting form',
       error: jsonError
     });
   }
