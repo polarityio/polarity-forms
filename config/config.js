@@ -3,7 +3,7 @@ module.exports = {
   acronym: 'FORM',
   description: 'Display customized forms to users for gathering user feedback or input.',
   logging: {
-    level: 'trace' //trace, debug, info, warn, error, fatal
+    level: 'info' //trace, debug, info, warn, error, fatal
   },
   styles: ['./styles/style.less'],
   entityTypes: ['*'],
