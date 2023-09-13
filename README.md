@@ -3,7 +3,7 @@
 The Polarity Forms integration enables users to submit form based feedback/requests via email.  The integration can
 easily be customized with your own forms.
 
-| ![](assets/sample.png) | ![](/assets/rfi.png) | ![](assets/support.png) 
+| ![](images/sample.png) | ![](/images/rfi.png) | ![](images/support.png) 
 |------------------------|----------------------|-------------------------|
 | *Sample Form Example*  | *RFI Form Example*   | *Support Form Example*  |
 
