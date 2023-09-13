@@ -1,6 +1,7 @@
 {
   "name": "Request for Information (RFI)",
-  "subject": "Polarity RFI Received",
+  "subject": "Polarity -- RFI Received",
+  "description": "Submit a request for additional information on this indicator",
   "elements": [
     {
       "label": "Request Type",

@@ -1,5 +1,6 @@
 {
   "name": "Support Request",
+  "subject": "Polarity -- Support Request Received",
   "description": "Let us know about an issue you're having",
   "elements": [
     {

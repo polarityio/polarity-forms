@@ -1,6 +1,5 @@
 {
   "name": "Sample Form",
-  "recipient": "customersuccess@polarity.io",
   "description": "This is a sample form to show the various form elements available when building a form.",
   "elements": [
     {
