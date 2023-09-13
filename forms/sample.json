@@ -1,0 +1,55 @@
+{
+  "name": "Sample Form",
+  "recipient": "customersuccess@polarity.io",
+  "description": "This is a sample form to show the various form elements available when building a form.",
+  "elements": [
+    {
+      "label": "Select Sample",
+      "type": "select",
+      "values": [
+        "Option 1",
+        "Option 2",
+        "Option 3"
+      ],
+      "default": "Option 1",
+      "description": "This is a sample drop-down select element.",
+      "required": false
+    },
+    {
+      "label": "Sample Input",
+      "type": "input",
+      "default": "Default Value",
+      "description": "This is an input element for collecting short amounts of text data."
+    },
+    {
+      "label": "Additional Info",
+      "type": "block",
+      "text": "You can add additional information using the block element.  You can include html such as a link: <a href=\"https://polarity.io\">Open Polarity Website</a>"
+    },
+    {
+      "label": "Text Area Sample",
+      "type": "textarea",
+      "placeholder": "Provide some text here",
+      "description": "This is a textarea element for collecting longer text data.",
+      "required": true,
+      "rows": 10
+    },
+    {
+      "label": "Useful Links",
+      "type": "links",
+      "links": [
+        {
+          "text": "Send us an email",
+          "href": "mailto:customersuccess@polarity.io",
+          "afterIcon": "envelope"
+        },
+        {
+          "text": "Polarity.io",
+          "href": "https://polarity.io",
+          "afterIcon": "external-link-square"
+        }
+      ],
+      "description": "You can include a list of links."
+    }
+  ]
+}
