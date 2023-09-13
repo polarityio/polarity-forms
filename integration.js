@@ -83,6 +83,7 @@ function doLookup(entities, options, cb) {
     if (!options.privateIpOnly || (options.privateIpOnly && entityObj.isIP && entityObj.isPrivateIP)) {
       lookupResults.push({
         entity: entityObj,
+        isVolatile: true,
         data: {
           summary: [options.summaryTag],
           details: {
