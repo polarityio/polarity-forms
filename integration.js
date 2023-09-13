@@ -84,9 +84,9 @@ function doLookup(entities, options, cb) {
       lookupResults.push({
         entity: entityObj,
         data: {
-          summary: [], // summary is set via custom summary template
+          summary: [options.summaryTag],
           details: {
-            target: entityObj.value, // date is formatted via the template
+            target: entityObj.value,
             forms
           }
         }

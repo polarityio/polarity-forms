@@ -117,6 +117,15 @@ module.exports = {
       adminOnly: true
     },
     {
+      key: 'forms',
+      name: 'Enabled Forms',
+      description: 'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
+      default: 'default',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'includeIntegrationNames',
       name: 'Include Integration Names and Summary Tags',
       description:
@@ -127,10 +136,10 @@ module.exports = {
       adminOnly: true
     },
     {
-      key: 'forms',
-      name: 'Enabled Forms',
-      description: 'A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).',
-      default: 'default',
+      key: 'summaryTag',
+      name: 'Summary Tag',
+      description: 'Customize the integration\'s summary tag',
+      default: 'Polarity Form',
       type: 'text',
       userCanEdit: false,
       adminOnly: true
