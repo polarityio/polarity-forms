@@ -3,6 +3,10 @@
 The Polarity Forms integration enables users to submit form based feedback/requests via email.  The integration can
 easily be customized with your own forms.
 
+| ![](assets/sample.png) | ![](/assets/rfi.png) | ![](assets/support.png) 
+|------------------------|----------------------|-------------------------|
+| *Sample Form Example*  | *RFI Form Example*   | *Support Form Example*  |
+
 # Data
 
 When a form is submitted by a user, the submitted form will include the following information:
@@ -14,6 +18,13 @@ When a form is submitted by a user, the submitted form will include the followin
 * Custom Form Data
 
 # Integration Options
+
+### Form Delivery Method
+Choose how form data should be delivered. The default is "Email".
+
+* Email -- form data will be sent to the configured email address (SMTP settings must be configured)
+* Log File -- form data will be logged as JSON in the integration log file
+* Email and Log File -- form data will be sent via email and logged (SMTP settings must be configured)
 
 ### SMTP Host
 
@@ -45,13 +56,17 @@ Options are:
 
 The default email address to send form submissions to if a form configuration does not specify a recipient.
 
+### Enabled Forms
+
+A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).
+
 ### Include Integration Names and Summary Tags
 
 If checked, the email will include the name of integrations the user had access to when submitting the form as well as summary tags.
 
-### Enabled Forms
+### Summary Tag
 
-A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension). 
+Customize the integration's summary tag.  The default is `Polarity Form`.
 
 ### Show Forms by Default
 
@@ -214,6 +229,8 @@ The `links` form element is used to display link information to the user.  The `
 
 **links** {array} _(required)_ - An array of link objects to display.    
 
+**description** {string} _(default: "")_ - An optional description for the links
+
 
 A link object can contain the following attributes:
 
@@ -230,6 +247,7 @@ Example `links` form element with all options specified:
 {
   "type": "links",
   "label": "Useful Links",
+  "description": "Here are some useful links",
   "links": [
     {
       "text": "Open Google",
@@ -255,8 +273,9 @@ The `block` form element is used to display general information to the user and 
 
 **text** {string} _(required)_ - The text to display in the block (also supports html)
 
+**description** {string} _(default: "")_ - An optional description for block
 
-Example `block` form element with all options specified:
+Example `block` form element:
 
 ```
 {
