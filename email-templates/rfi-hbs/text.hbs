@@ -1,0 +1,23 @@
+# Form Submission Received
+
+## Requestor
+
+Full Name: {{user.fullName}}
+Email: {{user.email}}
+Username: {{user.username}}
+
+## {{formName}}
+
+Entity: <strong>{{entity}}</strong>
+{{#each fields as | field |}}
+{{field.label}}: **{{field.value}}**
+{{/each}}
+
+## Integrations
+At the time the request was submitted, {{user.fullName}} had search results from the following integrations:
+{{#each integrationData as | integration |}}
+* {{integration.integrationName}}
+{{#each integration.summary as | tag |}}
+   * {{tag}}
+{{/each}}
+{{/each}}
