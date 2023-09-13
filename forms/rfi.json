@@ -7,13 +7,11 @@
       "type": "select",
       "values": [
         "OSINT Analysis",
-        "AI Tasking",
         "Clarification",
         "Threat Assessment"
       ],
       "default": "OSINT Analysis",
-      "required": true,
-      "description": ""
+      "required": true
     },
     {
       "label": "Priority",
@@ -30,7 +28,7 @@
     {
       "label": "RFI Details",
       "type": "textarea",
-      "placeholder": "Provide details about the RFI",
+      "placeholder": "Provide additional details about the RFI",
       "required":  true
     }
   ]
