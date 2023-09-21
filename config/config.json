@@ -10,7 +10,16 @@
     "./styles/style.less"
   ],
   "entityTypes": [
-    "*"
+    "domain",
+    "IPv4",
+    "IPv6",
+    "IPv4CIDR",
+    "email",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "url",
+    "cve"
   ],
   "defaultColor": "light-gray",
   "block": {
