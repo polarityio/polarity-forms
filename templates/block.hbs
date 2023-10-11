@@ -53,6 +53,23 @@
           {{/if}}
         </div>
       {{/if}}
+      {{#if hasMultipleRecipients}}
+        <div class="input-container">
+          <label class="small ifta-label">Recipient</label>
+          <select
+            class="ifta-field"
+            {{on "change" (pick "target.value" (set selectedForm "_selectedRecipient"))}}
+            disabled={{block._state.isSending}}
+          >
+            {{#each selectedForm.recipient as | recipient |}}
+              <option value="{{recipient}}" selected={{if (eq recipient selectedForm._selectedRecipient) true}}>
+                {{recipient}}
+              </option>
+            {{/each}}
+          </select>
+          {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
+        </div>
+      {{/if}}
       {{#each selectedForm.elements as | uiElement |}}
         {{#if (eq uiElement.type "input")}}
           <div class="input-container">

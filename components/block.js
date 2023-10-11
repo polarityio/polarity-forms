@@ -4,6 +4,11 @@ polarity.export = PolarityComponent.extend({
   notificationsData: Ember.inject.service('notificationsData'),
   currentUser: Ember.inject.service('currentUser'),
   forms: Ember.computed.alias('block.data.details.forms'),
+  hasMultipleRecipients: Ember.computed('block._state.selectedFormIndex', function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let recipient = this.get(`forms.${selectedFormIndex}.recipient`);
+    return Array.isArray(recipient);
+  }),
   isExpanded: true,
   statusMessageIsVisible: false,
   statusMessageType: 'success', //valid values are 'success' and 'error'
@@ -144,9 +149,12 @@ polarity.export = PolarityComponent.extend({
       });
     });
 
+    let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+
     const payload = {
       action: 'SUBMIT_TASKING',
       entity: this.get('block.entity.value'),
+      recipient: dynamicRecipient ? dynamicRecipient : null,
       integrationData: this.getIntegrationData(),
       fileName: this.get(`forms.${selectedFormIndex}.fileName`),
       formName: this.get(`forms.${selectedFormIndex}.name`),
