@@ -10,6 +10,35 @@ polarity.export = PolarityComponent.extend({
   selectedFormHasRecipientDomains: Ember.computed('block._state.selectedFormIndex', function () {
     return this.hasRecipientDomains(this.get('block._state.selectedFormIndex'));
   }),
+  showCustomRecipient: Ember.computed('block._state.selectedFormIndex', 'forms.@each._selectedRecipient', function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    console.info('Form Index: ' + selectedFormIndex);
+    let _selectedRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+    console.info('showCustomRecipient ' + _selectedRecipient);
+    // no recipient domains specified for the form so we never show custom recipient input
+    if (!this.selectedFormHasRecipientDomains) {
+      console.info('showCustomRecipient: false 1');
+      return false;
+    }
+
+    // recipient domains are specified and no multi-recipient is specified
+    if (this.selectedFormHasRecipientDomains && !this.selectedFormHasMultipleRecipients) {
+      console.info('showCustomRecipient: true 2');
+      return true;
+    }
+
+    if (
+      this.selectedFormHasMultipleRecipients &&
+      this.selectedFormHasRecipientDomains &&
+      _selectedRecipient === 'custom'
+    ) {
+      console.info('showCustomRecipient: true 3');
+      return true;
+    }
+
+    console.info('showCustomRecipient: false 4');
+    return false;
+  }),
   isExpanded: true,
   statusMessageIsVisible: false,
   statusMessageType: 'success', //valid values are 'success' and 'error'
@@ -96,27 +125,33 @@ polarity.export = PolarityComponent.extend({
     let form = this.get(`forms.${selectedFormIndex}`);
     let valid = true;
 
-    if (this.hasRecipientDomains(selectedFormIndex) && !form._customRecipient) {
-      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient is a required field.`);
-      valid = false;
-    }
-
     if (
-      this.hasRecipientDomains(selectedFormIndex) &&
-      form._customRecipient &&
-      form._customRecipient.indexOf(' ') >= 0
+      (this.hasMultipleRecipients(selectedFormIndex) &&
+        this.get(`forms.${selectedFormIndex}._selectedRecipient`) === 'custom') ||
+      (this.hasRecipientDomains(selectedFormIndex) && !this.hasMultipleRecipients(selectedFormIndex))
     ) {
-      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain spaces.`);
-      valid = false;
-    }
+      if (this.hasRecipientDomains(selectedFormIndex) && !form._customRecipient) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient is a required field.`);
+        valid = false;
+      }
 
-    if (
+      if (
+        this.hasRecipientDomains(selectedFormIndex) &&
+        form._customRecipient &&
+        form._customRecipient.indexOf(' ') >= 0
+      ) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain spaces.`);
+        valid = false;
+      }
+
+      if (
         this.hasRecipientDomains(selectedFormIndex) &&
         form._customRecipient &&
         form._customRecipient.indexOf('@') >= 0
-    ) {
-      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain an "at" (@) sign.`);
-      valid = false;
+      ) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain an "at" (@) sign.`);
+        valid = false;
+      }
     }
 
     form.elements.forEach((element, elementIndex) => {
@@ -169,21 +204,30 @@ polarity.export = PolarityComponent.extend({
     let selectedFormIndex = this.get('block._state.selectedFormIndex');
     let customRecipient = this.get(`forms.${selectedFormIndex}._customRecipient`);
 
-    if (this.selectedFormHasRecipientDomains && customRecipient) {
-      let selectedDomain = this.get(`forms.${selectedFormIndex}._selectedRecipientDomain`);
-      if (!selectedDomain) {
-        selectedDomain = this.get(`forms.${selectedFormIndex}.recipientDomains[0]`);
-      }
-      return `${customRecipient}@${selectedDomain}`;
-    } else if (this.selectedFormHasMultipleRecipients) {
+    if (this.selectedFormHasMultipleRecipients) {
       let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+      let _selectedRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+
       if (!dynamicRecipient) {
         dynamicRecipient = this.get(`forms.${selectedFormIndex}.recipient.0`);
       }
-      return dynamicRecipient;
-    } else {
-      return null;
+
+      // If the recipient is set to custom we don't return it, instead we move to the next
+      // if statement which pulls the recipient information from the custom recipient input
+      if (dynamicRecipient !== 'custom') {
+        return dynamicRecipient;
+      }
     }
+
+    if (this.selectedFormHasRecipientDomains && customRecipient) {
+      let selectedDomain = this.get(`forms.${selectedFormIndex}._selectedRecipientDomain`);
+      if (!selectedDomain) {
+        selectedDomain = this.get(`forms.${selectedFormIndex}.recipientDomains.0`);
+      }
+      return `${customRecipient}@${selectedDomain}`;
+    }
+
+    return null;
   },
   sendEmail: function (vote) {
     this.clearElementErrors();
@@ -204,8 +248,6 @@ polarity.export = PolarityComponent.extend({
         value: element.value
       });
     });
-
-    let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
 
     const payload = {
       action: 'SUBMIT_TASKING',

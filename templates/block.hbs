@@ -66,11 +66,16 @@
                 {{recipient}}
               </option>
             {{/each}}
+            {{#if selectedFormHasRecipientDomains}}
+              <option class="custom-recipient-option" value="custom" selected={{if (eq "custom" selectedForm._selectedRecipient) true}}>
+                -- Provide your own email recipient
+              </option>
+            {{/if}}
           </select>
           {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
         </div>
       {{/if}}
-      {{#if selectedFormHasRecipientDomains}}
+      {{#if showCustomRecipient}}
         <div class="input-container">
           <label class="small ifta-label">
             Recipient
@@ -87,17 +92,23 @@
               @
             </div>
             <div class="recipient-domain-container">
-              <select
-                class="ifta-domain-field"
-                {{on "change" (pick "target.value" (set selectedForm "_selectedRecipientDomain"))}}
-                disabled={{block._state.isSending}}
-              >
-                {{#each selectedForm.recipientDomains as | domain |}}
-                  <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedRecipientDomain) true}}>
-                    {{domain}}
-                  </option>
-                {{/each}}
-              </select>
+              {{#if (eq selectedForm.recipientDomains.length 1)}}
+                <div class="ifta-domain-single">
+                  {{selectedForm.recipientDomains.[0]}}
+                </div>
+              {{else}}
+                <select
+                  class="ifta-domain-field"
+                  {{on "change" (pick "target.value" (set selectedForm "_selectedRecipientDomain"))}}
+                  disabled={{block._state.isSending}}
+                >
+                  {{#each selectedForm.recipientDomains as | domain |}}
+                    <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedRecipientDomain) true}}>
+                      {{domain}}
+                    </option>
+                  {{/each}}
+                </select>
+              {{/if}}
             </div>
           </div>
           {{#if selectedForm._recipientDomainError}}
