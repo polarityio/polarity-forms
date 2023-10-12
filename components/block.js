@@ -110,6 +110,15 @@ polarity.export = PolarityComponent.extend({
       valid = false;
     }
 
+    if (
+        this.hasRecipientDomains(selectedFormIndex) &&
+        form._customRecipient &&
+        form._customRecipient.indexOf('@') >= 0
+    ) {
+      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain an "at" (@) sign.`);
+      valid = false;
+    }
+
     form.elements.forEach((element, elementIndex) => {
       if (element.required && !element.value) {
         this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, `${element.label} is a required field.`);
