@@ -115,7 +115,7 @@ The following is an example form with a single `textarea` element specified:
 
 ## Recipients
 
-The recipient of the form email can be specified in multiple ways.  Be default, if no `recipient` is specified for the form, then the integration's default recipient will be used which is set on the Integration Settings page.  THis is an integration wide recipient that can be applied to all forms.
+The recipient of the form email can be specified in multiple ways.  Be default, if no `recipient` is specified for the form, then the integration's default recipient will be used which is set on the Integration Settings page.  This is an integration wide recipient that can be applied to all forms.
 
 ### Single Recipient
 
