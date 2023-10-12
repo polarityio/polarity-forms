@@ -85,7 +85,9 @@ A configuration file has the following properties:
 
 **name** {string} _(Required)_ - The name of the form
 
-**recipient** {string} _(Optional)_ - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.
+**recipient** {string | string[]} _(Optional)_ - The email address to send the form to.  If not specified the form will be sent to the integration's default recipient.  If a list of recipients is provided, the user will be allowed to choose the recipient using a drop menu in the form.
+
+**recipientDomains** {string[]} _(Optional)_ - If specified the user will need to provide their own recipient email address.  To prevent any email from being entered, the recipient will only be allowed to send emails to the specified domains.
 
 **subject** {string} _(Optional)_ - The subject of the email.  If not specified the subject will be "Polarity Form Submission".
 
@@ -110,6 +112,72 @@ The following is an example form with a single `textarea` element specified:
   ]
 }
 ```
+
+## Recipients
+
+The recipient of the form email can be specified in multiple ways.  Be default, if no `recipient` is specified for the form, then the integration's default recipient will be used which is set on the Integration Settings page.  This is an integration wide recipient that can be applied to all forms.
+
+### Single Recipient
+
+To provide more flexibility, you can also specify a recipient on a per-form basis.  As an example, the following form will always be sent to `support@company.internal`:
+
+```
+  "name": "Support Request",
+  "recipient": "support@company.internal",
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+### Multiple Recipients
+
+If you would like the user to be able to choose from a list of recipients you can provide a list of recipient emails using the `recipient` property.  In this example, the user can choose which team to send the form to by selecting from a Recipient drop down list: 
+
+```
+{
+  "name": "Support Request",
+  "recipient": ["team1@company.internal", "team2@company.internal", "team3@company.internal"],
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+### User provided recipient
+
+Finally, you can allow users to provide their own recipient email address but restrict which domains the email can include.  To do this, provide a list of allowed domains using the `recipientDomains` property:
+
+```
+{
+  "name": "Support Request",
+  "recipientDomains": ["company.internal", "us.company.internal", "eu.company.internal"],
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+In the above example, the user will be asked to provide the email address to send the form to but the email address must pick from one of the three provided domains.
+
 
 ## Form Elements
 
