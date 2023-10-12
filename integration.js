@@ -148,7 +148,7 @@ function setupTemplateBuilder() {
 }
 
 function getRecipient(fileName, recipient, options) {
-  if(recipient){
+  if (recipient) {
     return recipient;
   } else if (formsByFileName[fileName] && formsByFileName[fileName].recipient) {
     return formsByFileName[fileName].recipient;
@@ -185,7 +185,7 @@ async function getTemplate({ user, entity, integrationData, formName, fields, fi
 async function sendEmail(template, user, fileName, recipient, options) {
   const emailSettings = {
     text: template.text,
-    from: `"${user.fullName}" <${user.email}>`,
+    from: options.sender.length > 0 ? options.sender : `"${user.fullName}" <${user.email}>`,
     to: getRecipient(fileName, recipient, options),
     subject: template.subject,
     html: template.html

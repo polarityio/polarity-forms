@@ -4,10 +4,11 @@ polarity.export = PolarityComponent.extend({
   notificationsData: Ember.inject.service('notificationsData'),
   currentUser: Ember.inject.service('currentUser'),
   forms: Ember.computed.alias('block.data.details.forms'),
-  hasMultipleRecipients: Ember.computed('block._state.selectedFormIndex', function () {
-    let selectedFormIndex = this.get('block._state.selectedFormIndex');
-    let recipient = this.get(`forms.${selectedFormIndex}.recipient`);
-    return Array.isArray(recipient);
+  selectedFormHasMultipleRecipients: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasMultipleRecipients(this.get('block._state.selectedFormIndex'));
+  }),
+  selectedFormHasRecipientDomains: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasRecipientDomains(this.get('block._state.selectedFormIndex'));
   }),
   isExpanded: true,
   statusMessageIsVisible: false,
@@ -46,6 +47,14 @@ polarity.export = PolarityComponent.extend({
     closeError: function () {
       this.set('errorMessage', '');
     }
+  },
+  hasRecipientDomains(selectedFormIndex) {
+    let recipientDomains = this.get(`forms.${selectedFormIndex}.recipientDomains`);
+    return Array.isArray(recipientDomains);
+  },
+  hasMultipleRecipients(selectedFormIndex) {
+    let recipient = this.get(`forms.${selectedFormIndex}.recipient`);
+    return Array.isArray(recipient);
   },
   getIntegrationData() {
     let entityData = [];
@@ -87,6 +96,20 @@ polarity.export = PolarityComponent.extend({
     let form = this.get(`forms.${selectedFormIndex}`);
     let valid = true;
 
+    if (this.hasRecipientDomains(selectedFormIndex) && !form._customRecipient) {
+      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient is a required field.`);
+      valid = false;
+    }
+
+    if (
+      this.hasRecipientDomains(selectedFormIndex) &&
+      form._customRecipient &&
+      form._customRecipient.indexOf(' ') >= 0
+    ) {
+      this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain spaces.`);
+      valid = false;
+    }
+
     form.elements.forEach((element, elementIndex) => {
       if (element.required && !element.value) {
         this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, `${element.label} is a required field.`);
@@ -110,6 +133,8 @@ polarity.export = PolarityComponent.extend({
     let selectedFormIndex = this.get('block._state.selectedFormIndex');
     let form = this.get(`forms.${selectedFormIndex}`);
 
+    this.set(`forms.${selectedFormIndex}._recipientDomainError`, '');
+
     form.elements.forEach((element, elementIndex) => {
       this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, '');
     });
@@ -131,7 +156,29 @@ polarity.export = PolarityComponent.extend({
       // }
     });
   },
+  getRecipient: function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let customRecipient = this.get(`forms.${selectedFormIndex}._customRecipient`);
+
+    if (this.selectedFormHasRecipientDomains && customRecipient) {
+      let selectedDomain = this.get(`forms.${selectedFormIndex}._selectedRecipientDomain`);
+      if (!selectedDomain) {
+        selectedDomain = this.get(`forms.${selectedFormIndex}.recipientDomains[0]`);
+      }
+      return `${customRecipient}@${selectedDomain}`;
+    } else if (this.selectedFormHasMultipleRecipients) {
+      let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+      if (!dynamicRecipient) {
+        dynamicRecipient = this.get(`forms.${selectedFormIndex}.recipient.0`);
+      }
+      return dynamicRecipient;
+    } else {
+      return null;
+    }
+  },
   sendEmail: function (vote) {
+    this.clearElementErrors();
+
     if (!this.validateRequiredFields()) {
       this.showStatusMessage('Missing required fields', 'error');
       return;
@@ -154,7 +201,7 @@ polarity.export = PolarityComponent.extend({
     const payload = {
       action: 'SUBMIT_TASKING',
       entity: this.get('block.entity.value'),
-      recipient: dynamicRecipient ? dynamicRecipient : null,
+      recipient: this.getRecipient(),
       integrationData: this.getIntegrationData(),
       fileName: this.get(`forms.${selectedFormIndex}.fileName`),
       formName: this.get(`forms.${selectedFormIndex}.name`),

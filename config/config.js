@@ -116,6 +116,26 @@ module.exports = {
       adminOnly: true
     },
     {
+      key: 'sender',
+      name: 'Sender Email Address',
+      description:
+        "The sender email address for all emails sent by the integration.  If left blank, the submitting Polarity user's email address will be used.",
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
+      key: 'recipient',
+      name: 'Default Recipient Email Address',
+      description:
+        'The default email address to send form submissions to if a form configuration does not specify a recipient.',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'recipient',
       name: 'Default Recipient Email Address',
       description:
