@@ -1,6 +1,8 @@
 {
   "name": "Sample Form",
   "description": "This is a sample form to show the various form elements available when building a form.",
+  "recipient": ["team1@company.internal", "team2@company.internal", "team3@company.internal"],
+  "recipientDomains": ["company.internal", "company.external"],
   "elements": [
     {
       "label": "Select Sample",
