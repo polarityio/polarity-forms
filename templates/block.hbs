@@ -53,6 +53,72 @@
           {{/if}}
         </div>
       {{/if}}
+      {{#if selectedFormHasMultipleRecipients}}
+        <div class="input-container">
+          <label class="small ifta-label">Recipient</label>
+          <select
+            class="ifta-field"
+            {{on "change" (pick "target.value" (set selectedForm "_selectedRecipient"))}}
+            disabled={{block._state.isSending}}
+          >
+            {{#each selectedForm.recipient as | recipient |}}
+              <option value="{{recipient}}" selected={{if (eq recipient selectedForm._selectedRecipient) true}}>
+                {{recipient}}
+              </option>
+            {{/each}}
+            {{#if selectedFormHasRecipientDomains}}
+              <option class="custom-recipient-option" value="custom" selected={{if (eq "custom" selectedForm._selectedRecipient) true}}>
+                -- Provide your own email recipient
+              </option>
+            {{/if}}
+          </select>
+          {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
+        </div>
+      {{/if}}
+      {{#if showCustomRecipient}}
+        <div class="input-container">
+          <label class="small ifta-label">
+            Recipient
+            <span class="required">*</span>
+          </label>
+          <div class="email-input-container d-flex align-items-center justify-content-between {{if selectedForm._recipientDomainError "error"}}">
+            {{input
+              class="ifta-field"
+              value=selectedForm._customRecipient
+              disabled=block._state.isSending
+              required=true
+            }}
+            <div class="at-sign-container">
+              @
+            </div>
+            <div class="recipient-domain-container">
+              {{#if (eq selectedForm.recipientDomains.length 1)}}
+                <div class="ifta-domain-single">
+                  {{selectedForm.recipientDomains.[0]}}
+                </div>
+              {{else}}
+                <select
+                  class="ifta-domain-field"
+                  {{on "change" (pick "target.value" (set selectedForm "_selectedRecipientDomain"))}}
+                  disabled={{block._state.isSending}}
+                >
+                  {{#each selectedForm.recipientDomains as | domain |}}
+                    <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedRecipientDomain) true}}>
+                      {{domain}}
+                    </option>
+                  {{/each}}
+                </select>
+              {{/if}}
+            </div>
+          </div>
+          {{#if selectedForm._recipientDomainError}}
+            <div class="ifta-error-message">
+              {{selectedForm._recipientDomainError}}
+            </div>
+          {{/if}}
+        </div>
+
+      {{/if}}
       {{#each selectedForm.elements as | uiElement |}}
         {{#if (eq uiElement.type "input")}}
           <div class="input-container">

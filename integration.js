@@ -147,8 +147,10 @@ function setupTemplateBuilder() {
   });
 }
 
-function getRecipient(fileName, options) {
-  if (formsByFileName[fileName] && formsByFileName[fileName].recipient) {
+function getRecipient(fileName, recipient, options) {
+  if (recipient) {
+    return recipient;
+  } else if (formsByFileName[fileName] && formsByFileName[fileName].recipient) {
     return formsByFileName[fileName].recipient;
   } else {
     return options.recipient;
@@ -180,11 +182,11 @@ async function getTemplate({ user, entity, integrationData, formName, fields, fi
   return template;
 }
 
-async function sendEmail(template, user, fileName, options) {
+async function sendEmail(template, user, fileName, recipient, options) {
   const emailSettings = {
     text: template.text,
-    from: `"${user.fullName}" <${user.email}>`,
-    to: getRecipient(fileName, options),
+    from: options.sender.length > 0 ? options.sender : `"${user.fullName}" <${user.email}>`,
+    to: getRecipient(fileName, recipient, options),
     subject: template.subject,
     html: template.html
   };
@@ -294,7 +296,7 @@ async function onMessage(payload, options, cb) {
     const template = await getTemplate(payload, options);
 
     if (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') {
-      await sendEmail(template, payload.user, payload.fileName, options);
+      await sendEmail(template, payload.user, payload.fileName, payload.recipient, options);
     }
 
     if (options.deliveryMethod.value === 'log' || options.deliveryMethod.value === 'emailAndLog') {

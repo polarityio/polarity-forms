@@ -18,6 +18,19 @@
   }
 }
 
+option.custom-recipient-option {
+  background-color: #eee;
+}
+
+.ifta-error-message {
+  padding: 0;
+  color: red;
+  margin-bottom: 10px;
+  margin-top: -13px;
+  font-size: 10px;
+  margin-left: 5px;
+}
+
 .error-message {
   padding: 10px;
 
@@ -134,6 +147,69 @@
   width: 100%;
   position: relative;
 
+  .email-input-container {
+    border-radius: 6px;
+    margin: 0 0 15px;
+    width: 100%;
+    border: 1px solid #ccc;
+    line-height: 12px;
+
+    &.error {
+      border-color: @red;
+    }
+
+    &:focus-within {
+      -webkit-appearance: none;
+      outline: none;
+      color: #000000;
+      border-color: @green;
+      box-shadow: 0 0 0 0.2rem rgba(123, 201, 66, 0.25);
+    }
+
+    input {
+      flex: 1 1 auto;
+      border: none;
+      margin-bottom: 0;
+      padding: 15px 0px 5px 10px;
+
+      &.ifta-field:focus {
+        box-shadow: none;
+        border-color: inherit;
+        color: inherit;
+        outline: inherit;
+        -webkit-appearance: inherit;
+      }
+    }
+
+    .at-sign-container {
+      flex: 0 0 20px;
+      text-align: center;
+      height: 100%;
+      line-height: 100%;
+      margin-top: 9px;
+      font-weight: bold;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .recipient-domain-container {
+      flex: 1 1 auto;
+      margin-right: 3px;
+
+      .ifta-domain-single {
+        margin-top: 9px;
+        padding-right: 5px;
+      }
+
+      .ifta-domain-field {
+        border: 1px solid #eee;
+        padding: 0px 2px;
+        border-radius: 4px;
+        margin-top: 9px;
+      }
+    }
+  }
+
   &.text-area-container {
     border: 1px solid #ccc;
     border-radius: 6px;
@@ -213,6 +289,7 @@
     width: 100%;
     border: 1px solid #ccc;
     line-height: 12px;
+    height: 38px;
 
     &.error {
       border-color: @red;

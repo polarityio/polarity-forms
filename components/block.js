@@ -4,6 +4,41 @@ polarity.export = PolarityComponent.extend({
   notificationsData: Ember.inject.service('notificationsData'),
   currentUser: Ember.inject.service('currentUser'),
   forms: Ember.computed.alias('block.data.details.forms'),
+  selectedFormHasMultipleRecipients: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasMultipleRecipients(this.get('block._state.selectedFormIndex'));
+  }),
+  selectedFormHasRecipientDomains: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasRecipientDomains(this.get('block._state.selectedFormIndex'));
+  }),
+  showCustomRecipient: Ember.computed('block._state.selectedFormIndex', 'forms.@each._selectedRecipient', function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    console.info('Form Index: ' + selectedFormIndex);
+    let _selectedRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+    console.info('showCustomRecipient ' + _selectedRecipient);
+    // no recipient domains specified for the form so we never show custom recipient input
+    if (!this.selectedFormHasRecipientDomains) {
+      console.info('showCustomRecipient: false 1');
+      return false;
+    }
+
+    // recipient domains are specified and no multi-recipient is specified
+    if (this.selectedFormHasRecipientDomains && !this.selectedFormHasMultipleRecipients) {
+      console.info('showCustomRecipient: true 2');
+      return true;
+    }
+
+    if (
+      this.selectedFormHasMultipleRecipients &&
+      this.selectedFormHasRecipientDomains &&
+      _selectedRecipient === 'custom'
+    ) {
+      console.info('showCustomRecipient: true 3');
+      return true;
+    }
+
+    console.info('showCustomRecipient: false 4');
+    return false;
+  }),
   isExpanded: true,
   statusMessageIsVisible: false,
   statusMessageType: 'success', //valid values are 'success' and 'error'
@@ -41,6 +76,14 @@ polarity.export = PolarityComponent.extend({
     closeError: function () {
       this.set('errorMessage', '');
     }
+  },
+  hasRecipientDomains(selectedFormIndex) {
+    let recipientDomains = this.get(`forms.${selectedFormIndex}.recipientDomains`);
+    return Array.isArray(recipientDomains);
+  },
+  hasMultipleRecipients(selectedFormIndex) {
+    let recipient = this.get(`forms.${selectedFormIndex}.recipient`);
+    return Array.isArray(recipient);
   },
   getIntegrationData() {
     let entityData = [];
@@ -82,6 +125,35 @@ polarity.export = PolarityComponent.extend({
     let form = this.get(`forms.${selectedFormIndex}`);
     let valid = true;
 
+    if (
+      (this.hasMultipleRecipients(selectedFormIndex) &&
+        this.get(`forms.${selectedFormIndex}._selectedRecipient`) === 'custom') ||
+      (this.hasRecipientDomains(selectedFormIndex) && !this.hasMultipleRecipients(selectedFormIndex))
+    ) {
+      if (this.hasRecipientDomains(selectedFormIndex) && !form._customRecipient) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient is a required field.`);
+        valid = false;
+      }
+
+      if (
+        this.hasRecipientDomains(selectedFormIndex) &&
+        form._customRecipient &&
+        form._customRecipient.indexOf(' ') >= 0
+      ) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain spaces.`);
+        valid = false;
+      }
+
+      if (
+        this.hasRecipientDomains(selectedFormIndex) &&
+        form._customRecipient &&
+        form._customRecipient.indexOf('@') >= 0
+      ) {
+        this.set(`forms.${selectedFormIndex}._recipientDomainError`, `Recipient cannot contain an "at" (@) sign.`);
+        valid = false;
+      }
+    }
+
     form.elements.forEach((element, elementIndex) => {
       if (element.required && !element.value) {
         this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, `${element.label} is a required field.`);
@@ -105,6 +177,8 @@ polarity.export = PolarityComponent.extend({
     let selectedFormIndex = this.get('block._state.selectedFormIndex');
     let form = this.get(`forms.${selectedFormIndex}`);
 
+    this.set(`forms.${selectedFormIndex}._recipientDomainError`, '');
+
     form.elements.forEach((element, elementIndex) => {
       this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, '');
     });
@@ -126,7 +200,38 @@ polarity.export = PolarityComponent.extend({
       // }
     });
   },
+  getRecipient: function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let customRecipient = this.get(`forms.${selectedFormIndex}._customRecipient`);
+
+    if (this.selectedFormHasMultipleRecipients) {
+      let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+      let _selectedRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
+
+      if (!dynamicRecipient) {
+        dynamicRecipient = this.get(`forms.${selectedFormIndex}.recipient.0`);
+      }
+
+      // If the recipient is set to custom we don't return it, instead we move to the next
+      // if statement which pulls the recipient information from the custom recipient input
+      if (dynamicRecipient !== 'custom') {
+        return dynamicRecipient;
+      }
+    }
+
+    if (this.selectedFormHasRecipientDomains && customRecipient) {
+      let selectedDomain = this.get(`forms.${selectedFormIndex}._selectedRecipientDomain`);
+      if (!selectedDomain) {
+        selectedDomain = this.get(`forms.${selectedFormIndex}.recipientDomains.0`);
+      }
+      return `${customRecipient}@${selectedDomain}`;
+    }
+
+    return null;
+  },
   sendEmail: function (vote) {
+    this.clearElementErrors();
+
     if (!this.validateRequiredFields()) {
       this.showStatusMessage('Missing required fields', 'error');
       return;
@@ -147,6 +252,7 @@ polarity.export = PolarityComponent.extend({
     const payload = {
       action: 'SUBMIT_TASKING',
       entity: this.get('block.entity.value'),
+      recipient: this.getRecipient(),
       integrationData: this.getIntegrationData(),
       fileName: this.get(`forms.${selectedFormIndex}.fileName`),
       formName: this.get(`forms.${selectedFormIndex}.name`),
