@@ -1,8 +1,8 @@
 {
   "polarityIntegrationUuid": "4af13fc0-51e1-11ee-a5d7-e378424fa31a",
-  "name": "Polarity Forms",
-  "acronym": "FORM",
-  "description": "Display customized forms to users for gathering user feedback or input.",
+  "name": "Security Assistant",
+  "acronym": "AI",
+  "description": "Get a summary of data available to Polarity powered by Google Bard.",
   "logging": {
     "level": "info"
   },

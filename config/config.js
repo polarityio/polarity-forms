@@ -1,7 +1,7 @@
 module.exports = {
   name: 'Security Assistant',
   acronym: 'AI',
-  description: 'Display customized forms to users for gathering user feedback or input.',
+  description: 'Get a summary of data available to Polarity powered by Google Bard.',
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
   },
@@ -187,12 +187,11 @@ module.exports = {
     {
       key: 'apiKey',
       name: 'Google Cloud API Key',
-      description:
-          'A Google Cloud API key that has access to the Google Generative Language API',
+      description: 'A Google Cloud API key that has access to the Google Generative Language API',
       default: '',
       type: 'password',
       userCanEdit: false,
       adminOnly: true
-    },
+    }
   ]
 };
