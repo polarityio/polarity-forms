@@ -173,6 +173,16 @@
       "type": "boolean",
       "userCanEdit": true,
       "adminOnly": false
+    },
+    {
+      "key": "apiKey",
+      "name": "Google Cloud API Key",
+      "description":
+      "A Google Cloud API key that has access to the Google Generative Language API",
+      "default": "",
+      "type": "password",
+      "userCanEdit": false,
+      "adminOnly": true
     }
   ]
 }
