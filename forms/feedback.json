@@ -1,0 +1,26 @@
+{
+  "name": "Summary Feedback",
+  "description": "Provide feedback on the indicator summary.",
+  "elements": [
+    {
+      "label": "Summary Result",
+      "type": "select",
+      "values": [
+        "Accurate",
+        "Inconclusive",
+        "Incorrect"
+      ],
+      "default": "Accurate",
+      "description": "Let us know if the summary was accurate, inconclusive, or incorrect.",
+      "required": true
+    },
+    {
+      "label": "Details",
+      "type": "textarea",
+      "placeholder": "Provide details about the summary result.",
+      "description": "Provide details on why you found the result accurate, inconclusive, or incorrect",
+      "required": true,
+      "rows": 10
+    }
+  ]
+}

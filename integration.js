@@ -5,6 +5,8 @@ const Email = require('email-templates');
 const fs = require('fs');
 const { promisify } = require('util');
 const readdir = promisify(fs.readdir);
+const { setLogger } = require('./src/logger');
+const bard = require('./src/bard');
 
 const FORMS_DIRECTORY = './forms';
 
@@ -44,6 +46,7 @@ const formRequiredFields = {
 
 function startup(logger) {
   Logger = logger;
+  setLogger(Logger);
 }
 
 function maybeInitSmtp(options) {
@@ -287,32 +290,55 @@ async function getAvailableForms() {
 const parseErrorToReadableJSON = (error) => JSON.parse(JSON.stringify(error, Object.getOwnPropertyNames(error)));
 
 async function onMessage(payload, options, cb) {
-  Logger.trace({ payload }, 'onMessage');
+  Logger.info({ payload }, 'onMessage');
 
-  maybeInitSmtp(options);
-  maybeSetupTemplateBuilder();
+  switch (payload.action) {
+    case 'SUBMIT_FOR_ANALYSIS':
+      try {
+        const prompt = bard.createPrompt(payload.entity, payload.integrationData);
+        const analysis = await bard.askQuestion(prompt, options);
+        Logger.info({ prompt, analysis }, 'Generated Prompt');
+        cb(null, {
+          analysis
+        });
+      } catch (error) {
+        Logger.error(error);
+        parseErrorToReadableJSON(error);
+        Logger.error({ error }, 'Error submitting for analysis');
+        cb(error);
+      }
+      break;
+    case 'SUBMIT_FORM':
+      maybeInitSmtp(options);
+      maybeSetupTemplateBuilder();
 
-  try {
-    const template = await getTemplate(payload, options);
+      try {
+        const template = await getTemplate(payload, options);
 
-    if (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') {
-      await sendEmail(template, payload.user, payload.fileName, payload.recipient, options);
-    }
+        if (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') {
+          await sendEmail(template, payload.user, payload.fileName, payload.recipient, options);
+        }
 
-    if (options.deliveryMethod.value === 'log' || options.deliveryMethod.value === 'emailAndLog') {
-      Logger.info(template.text, 'Form submitted');
-    }
+        if (options.deliveryMethod.value === 'log' || options.deliveryMethod.value === 'emailAndLog') {
+          Logger.info(template.text, 'Form submitted');
+        }
 
-    cb(null, {
-      detail: 'Success'
-    });
-  } catch (sendEmailError) {
-    const jsonError = parseErrorToReadableJSON(sendEmailError);
-    Logger.error({ error: jsonError }, 'Error submitting form');
-    cb({
-      detail: 'Error encountered submitting form',
-      error: jsonError
-    });
+        cb(null, {
+          detail: 'Success'
+        });
+      } catch (sendEmailError) {
+        const jsonError = parseErrorToReadableJSON(sendEmailError);
+        Logger.error({ error: jsonError }, 'Error submitting form');
+        cb({
+          detail: 'Error encountered submitting form',
+          error: jsonError
+        });
+      }
+      break;
+    default:
+      cb({
+        detail: 'Unknown action'
+      });
   }
 }
 

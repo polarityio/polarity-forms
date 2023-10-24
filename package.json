@@ -1,12 +1,13 @@
 {
   "name": "polarity-forms",
-  "version": "3.1.0",
+  "version": "3.1.0+2",
   "main": "./integration.js",
   "private": true,
   "dependencies": {
     "async": "^3.2.4",
     "email-templates": "6.1.1",
     "nodemailer": "^6.9.4",
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "postman-request": "^2.88.1-postman.33"
   }
 }

@@ -1,6 +1,6 @@
 module.exports = {
-  name: 'Polarity Forms',
-  acronym: 'FORM',
+  name: 'Security Assistant',
+  acronym: 'AI',
   description: 'Display customized forms to users for gathering user feedback or input.',
   logging: {
     level: 'info' //trace, debug, info, warn, error, fatal
@@ -183,6 +183,16 @@ module.exports = {
       type: 'boolean',
       userCanEdit: true,
       adminOnly: false
-    }
+    },
+    {
+      key: 'apiKey',
+      name: 'Google Cloud API Key',
+      description:
+          'A Google Cloud API key that has access to the Google Generative Language API',
+      default: '',
+      type: 'password',
+      userCanEdit: false,
+      adminOnly: true
+    },
   ]
 };

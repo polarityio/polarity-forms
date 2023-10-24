@@ -75,6 +75,36 @@ polarity.export = PolarityComponent.extend({
     },
     closeError: function () {
       this.set('errorMessage', '');
+    },
+    sendForAnalysis: function () {
+      this.set('block._state.isSummarizing', true);
+      let integrationData = this.getIntegrationData();
+
+      integrationData = integrationData.reduce((accum, integration) => {
+        accum[integration.integrationName.toLowerCase()] = integration;
+        return accum;
+      }, {});
+
+      const payload = {
+        action: 'SUBMIT_FOR_ANALYSIS',
+        integrationData,
+        entity: this.get('block.entity')
+      };
+
+      console.info(`Payload for Summarization`, payload);
+
+      this.sendIntegrationMessage(payload)
+        .then((result) => {
+          this.set('analysis', result.analysis);
+        })
+        .catch((err) => {
+          console.error(err);
+        })
+        .finally(() => {
+          if (!this.isDestroyed) {
+            this.set('block._state.isSummarizing', false);
+          }
+        });
     }
   },
   hasRecipientDomains(selectedFormIndex) {
@@ -88,26 +118,31 @@ polarity.export = PolarityComponent.extend({
   getIntegrationData() {
     let entityData = [];
     let notifications = this.notificationsData.getNotificationList();
-
+    console.info('Notifications', notifications);
     if (notifications.length > 0) {
       let currentNode = notifications.head;
 
       while (currentNode) {
-        if (currentNode.primaryBlock.entity.value === this.get('block.entity.value')) {
+        console.info(currentNode);
+        if (
+          currentNode.primaryBlock.entity.value === this.get('block.entity.value') ||
+          currentNode.primaryBlock.entity.entityName === this.get('block.entity.value')
+        ) {
           console.info(currentNode);
           let blocks = currentNode.blocks;
           let polarityBlock = blocks.findBy('type', 'polarity');
           let integrationBlocks = blocks.rejectBy('type', 'polarity');
+          console.info(polarityBlock);
 
           if (integrationBlocks && integrationBlocks.length > 0) {
             entityData = integrationBlocks.reduce((accum, block) => {
-              if (block.name !== 'Polarity Tasker') {
-                accum.push({
-                  integrationName: block.name,
-                  summary: block.data.summary
-                  //details: block.data.details
-                });
-              }
+              //if (block.name !== 'Polarity Forms') {
+              accum.push({
+                integrationName: block.name,
+                summary: block.data.summary,
+                details: block.data.details
+              });
+              //}
               return accum;
             }, []);
           }
@@ -116,6 +151,8 @@ polarity.export = PolarityComponent.extend({
       }
 
       console.info('Integration Data', entityData);
+    } else {
+      console.info('No Integration Data Found');
     }
 
     return entityData;
@@ -250,10 +287,15 @@ polarity.export = PolarityComponent.extend({
     });
 
     const payload = {
-      action: 'SUBMIT_TASKING',
+      action: 'SUBMIT_FORM',
       entity: this.get('block.entity.value'),
       recipient: this.getRecipient(),
-      integrationData: this.getIntegrationData(),
+      integrationData: this.getIntegrationData().map((integration) => {
+        return {
+          integrationName: integration.integrationName,
+          summary: integration.summary
+        };
+      }),
       fileName: this.get(`forms.${selectedFormIndex}.fileName`),
       formName: this.get(`forms.${selectedFormIndex}.name`),
       formDescription: this.get(`forms.${selectedFormIndex}.description`),
