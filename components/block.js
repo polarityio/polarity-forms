@@ -44,6 +44,9 @@ polarity.export = PolarityComponent.extend({
   statusMessageType: 'success', //valid values are 'success' and 'error'
   errorMessage: '',
   init() {
+    let array = new Uint32Array(5);
+    this.set('uniqueIdPrefix', window.crypto.getRandomValues(array).join(''));
+
     if (!this.get('block._state')) {
       this.set('block._state', {});
       this.set('block._state.isSending', false);
@@ -67,6 +70,16 @@ polarity.export = PolarityComponent.extend({
     this._super(...arguments);
   },
   actions: {
+    copyData: function () {
+      Ember.run.scheduleOnce(
+        'afterRender',
+        this,
+        this.copyElementToClipboard,
+        `bard-container-${this.get('uniqueIdPrefix')}`
+      );
+
+      Ember.run.scheduleOnce('destroy', this, this.restoreCopyState);
+    },
     toggleIsExpanded: function () {
       this.toggleProperty('isExpanded');
     },
@@ -106,6 +119,24 @@ polarity.export = PolarityComponent.extend({
           }
         });
     }
+  },
+  copyElementToClipboard(element) {
+    window.getSelection().removeAllRanges();
+    let range = document.createRange();
+
+    range.selectNode(typeof element === 'string' ? document.getElementById(element) : element);
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+  },
+  restoreCopyState() {
+    this.set('showCopyMessage', true);
+
+    setTimeout(() => {
+      if (!this.isDestroyed) {
+        this.set('showCopyMessage', false);
+      }
+    }, 2000);
   },
   hasRecipientDomains(selectedFormIndex) {
     let recipientDomains = this.get(`forms.${selectedFormIndex}.recipientDomains`);
