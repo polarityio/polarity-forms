@@ -19,15 +19,23 @@ This following JSON is data for {{entity}}:
         const { details, summary } = data;
         delete details.apiService;
         delete details.hasResult;
-        delete details.stats.destination_countries;
-        delete details.stats.organizations;
-        if (details.stats && details.stats.tags) {
-          details.stats.tags = details.stats.tags.map((tag) => {
-            return {
-              tag: tag.tag,
-              count: tag.count
-            };
-          });
+        if (details.stats) {
+          if (details.stats.destination_countries) {
+            delete details.stats.destination_countries;
+          }
+
+          if (details.status.organizations) {
+            delete details.stats.organizations;
+          }
+
+          if (Array.isArray(details.stats.tags)) {
+            details.stats.tags = details.stats.tags.map((tag) => {
+              return {
+                tag: tag.tag,
+                count: tag.count
+              };
+            });
+          }
         }
 
         return data;
