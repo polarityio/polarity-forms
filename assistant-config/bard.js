@@ -1,8 +1,109 @@
 const { getLogger } = require('../src/logger');
 
 module.exports = {
-  prompt: `You will receive data from {{integrationNames}}.  The data will be in JSON format.  Provide a concise summary of all the provided for use by a time-strapped analyst.  The summary of the data should be no longer than two paragraphs.  Do not provide recommendations or tips.`,
+  prompt: `You will receive data from {{integrationNames}}.  The data will be in JSON format. Provide a short, concise summary of the provided data.  
+  
+  Follow these rules when creating the summary:
+   1. The summary can only be 5 sentences or less. 
+   2. Do not provide recommendations, tips, advice or other suggestions.
+   3. Do not say what I should do.`,
   integrations: {
+    greynoise: {
+      prompt: `
+This following JSON is data for {{entity}}:
+\`\`\`json
+{{details}}
+\`\`\`
+`,
+      parseData: (data) => {
+        const { details, summary } = data;
+        delete details.apiService;
+        delete details.hasResult;
+        delete details.stats.destination_countries;
+        delete details.stats.organizations;
+        if (details.stats && details.stats.tags) {
+          details.stats.tags = details.stats.tags.map((tag) => {
+            return {
+              tag: tag.tag,
+              count: tag.count
+            };
+          });
+        }
+
+        return data;
+      }
+    },
+    'mandiant threat intelligence': {
+      prompt: `
+This following JSON is data for {{entity}}:
+\`\`\`json
+{{details}}
+\`\`\`
+`,
+      parseData: (data) => {
+        const { details, summary } = data;
+        const parsedData = {};
+        parsedData.reports = details.searchResults.map((result) => {
+          return result.description;
+        });
+
+        return {
+          details: parsedData,
+          summary: data.summary
+        };
+      }
+    },
+    'cve search': {
+      prompt: `
+This following JSON is CVE data for {{entity}}:
+\`\`\`json
+{{details}}
+\`\`\`
+`,
+      parseData: (data) => {
+        const { details, summary } = data;
+        delete details.capec;
+        delete details.references;
+        delete details.refmap;
+
+        return data;
+      }
+    },
+    'cisa known exploited vulnerabilities': {
+      prompt: `
+This following JSON is DHS CISA's Known Exploited Vulnerabilities data for {{entity}}:
+\`\`\`json
+{{details}}
+\`\`\`
+`,
+      parseData: (data) => {
+        return data;
+      }
+    },
+    'exploit finder': {
+      prompt: `
+This following JSON is Exploit information for {{entity}} found on the Internet:
+\`\`\`json
+{{details}}
+\`\`\`
+`,
+      parseData: (data) => {
+        const { details, summary } = data;
+        delete details.icons;
+        let parsedDetails = details.searchResults.items.map((item) => {
+          return {
+            snippet: item.snippet,
+            title: item.title,
+            source: item.displayLink
+          };
+        });
+
+        return {
+          details: parsedDetails,
+          summary: data.summary
+        };
+      }
+    },
     virustotal: {
       prompt: `
 This following JSON is VirusTotal data for {{entity}}:

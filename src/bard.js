@@ -37,13 +37,15 @@ function createPrompt(entity, integrationsData) {
         let integrationPrompt = integrationConfig.prompt;
 
         if (integrationData.details) {
-          integrationPrompt = integrationPrompt.replace(detailsRegex, JSON.stringify(integrationData.details, null, 2));
+          //integrationPrompt = integrationPrompt.replace(detailsRegex, JSON.stringify(integrationData.details, null, 2));
+          integrationPrompt = integrationPrompt.replace(detailsRegex, JSON.stringify(integrationData.details));
         } else {
           Logger.warn({ integrationData }, 'No details found for integration');
         }
 
         if (integrationData.summary) {
-          integrationPrompt = integrationPrompt.replace(summaryRegex, JSON.stringify(integrationData.summary, null, 2));
+          //integrationPrompt = integrationPrompt.replace(summaryRegex, JSON.stringify(integrationData.summary, null, 2));
+          integrationPrompt = integrationPrompt.replace(summaryRegex, JSON.stringify(integrationData.summary));
         } else {
           Logger.warn({ integrationData }, 'No summary found for integration');
         }

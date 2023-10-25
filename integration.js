@@ -296,6 +296,7 @@ async function onMessage(payload, options, cb) {
     case 'SUBMIT_FOR_ANALYSIS':
       try {
         const prompt = bard.createPrompt(payload.entity, payload.integrationData);
+        Logger.info({prompt}, 'The Prompt');
         const analysis = await bard.askQuestion(prompt, options);
         Logger.info({ prompt, analysis }, 'Generated Prompt');
         cb(null, {
