@@ -18,8 +18,8 @@
     "MD5",
     "SHA1",
     "SHA256",
-    "url",
-    "cve"
+    "cve",
+    "url"
   ],
   "defaultColor": "light-gray",
   "block": {
@@ -126,6 +126,15 @@
         }
       ],
       "multiple": false,
+      "userCanEdit": false,
+      "adminOnly": true
+    },
+    {
+      "key": "sender",
+      "name": "Sender Email Address",
+      "description": "The sender email address for all emails sent by the integration.  If left blank, the submitting Polarity user's email address will be used.",
+      "default": "",
+      "type": "text",
       "userCanEdit": false,
       "adminOnly": true
     },
