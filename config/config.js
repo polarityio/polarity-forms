@@ -136,16 +136,6 @@ module.exports = {
       adminOnly: true
     },
     {
-      key: 'recipient',
-      name: 'Default Recipient Email Address',
-      description:
-        'The default email address to send form submissions to if a form configuration does not specify a recipient.',
-      default: '',
-      type: 'text',
-      userCanEdit: false,
-      adminOnly: true
-    },
-    {
       key: 'forms',
       name: 'Enabled Forms',
       description:
