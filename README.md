@@ -178,6 +178,77 @@ Finally, you can allow users to provide their own recipient email address but re
 
 In the above example, the user will be asked to provide the email address to send the form to but the email address must pick from one of the three provided domains.
 
+> You can combine the `recipientDomains` and `recipient` properties to include a drop down list of Recipient addresses and allow users to set their own.
+
+## Cc
+
+The forms can include an optional Cc email address which can be specified multiple ways. 
+
+### Single Cc
+
+You can specify a Cc on a per-form basis setting the `cc` property to a single email address. As an example, the following form will always be Cc'd to `support_cc@company.internal`:
+
+```
+  "name": "Support Request",
+  "recipient": "support@company.internal",
+  "cc": "support_cc@company.internal",
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+### Multiple Cc
+
+If you would like the user to be able to choose from a list of Cc addresses you can provide a list of Cc emails using the `cc` property.  In this example, the user can choose which team to Cc the form to by selecting from a Cc drop down list:
+
+```
+{
+  "name": "Support Request",
+  "recipient": ["team1@company.internal", "team2@company.internal", "team3@company.internal"],
+  "cc": ["team1_cc@company.internal", "team2_cc@company.internal"],
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+### User provided Cc
+
+Finally, you can allow users to provide their own Cc email address but restrict which domains the email can include.  To do this, provide a list of allowed domains using the `ccDomains` property:
+
+```
+{
+  "name": "Support Request",
+  "recipientDomains": ["company.internal", "us.company.internal", "eu.company.internal"],
+  "ccDomains": ["company.internal", "us.company.internal", "eu.company.internal"],
+  "description": "Send us a support request",
+  "elements": [
+    {
+      "type": "textarea",
+      "label": "Support Details",
+      "placeholder": "Provide details about your request",
+      "required": true
+    }
+  ]
+}
+```
+
+In the above example, the user will be asked to provide the email address to Cc the form to but the email address must pick from one of the three provided domains.
+
+> You can combine the `ccDomains` and `cc` properties to include a drop down list of Cc addresses and allow users to set their own.
 
 ## Form Elements
 

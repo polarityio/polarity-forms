@@ -157,6 +157,16 @@ function getRecipient(fileName, recipient, options) {
   }
 }
 
+function getCc(fileName, cc) {
+  if (cc) {
+    return cc;
+  } else if (formsByFileName[fileName] && formsByFileName[fileName].cc) {
+    return formsByFileName[fileName].cc;
+  } else {
+    return '';
+  }
+}
+
 function getEmailSubject(fileName) {
   if (formsByFileName[fileName] && formsByFileName[fileName].subject) {
     Logger.info({ fileName, subject: formsByFileName[fileName].subject }, 'Using custom subject');
@@ -182,11 +192,12 @@ async function getTemplate({ user, entity, integrationData, formName, fields, fi
   return template;
 }
 
-async function sendEmail(template, user, fileName, recipient, options) {
+async function sendEmail(template, user, fileName, recipient, cc, options) {
   const emailSettings = {
     text: template.text,
     from: options.sender.length > 0 ? options.sender : `"${user.fullName}" <${user.email}>`,
     to: getRecipient(fileName, recipient, options),
+    cc: getCc(fileName, cc),
     subject: template.subject,
     html: template.html
   };
@@ -296,7 +307,7 @@ async function onMessage(payload, options, cb) {
     const template = await getTemplate(payload, options);
 
     if (options.deliveryMethod.value === 'email' || options.deliveryMethod.value === 'emailAndLog') {
-      await sendEmail(template, payload.user, payload.fileName, payload.recipient, options);
+      await sendEmail(template, payload.user, payload.fileName, payload.recipient, payload.cc, options);
     }
 
     if (options.deliveryMethod.value === 'log' || options.deliveryMethod.value === 'emailAndLog') {
