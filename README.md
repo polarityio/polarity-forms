@@ -56,6 +56,10 @@ Options are:
 
 The default email address to send form submissions to if a form configuration does not specify a recipient.
 
+### Default CC Email Address
+
+The default email address to CC form submissions to if a form configuration does not specify a CC.  If left blank, no CC will be sent.
+
 ### Enabled Forms
 
 A comma delimited list of forms that should be available when interacting with this integration.  Forms should be referred to by their filename (not including the `.json` file extension).
