@@ -7,6 +7,12 @@ polarity.export = PolarityComponent.extend({
   selectedFormHasMultipleRecipients: Ember.computed('block._state.selectedFormIndex', function () {
     return this.hasMultipleRecipients(this.get('block._state.selectedFormIndex'));
   }),
+  selectedFormHasMultipleCc: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasMultipleCc(this.get('block._state.selectedFormIndex'));
+  }),
+  selectedFormHasCcDomains: Ember.computed('block._state.selectedFormIndex', function () {
+    return this.hasCcDomains(this.get('block._state.selectedFormIndex'));
+  }),
   selectedFormHasRecipientDomains: Ember.computed('block._state.selectedFormIndex', function () {
     return this.hasRecipientDomains(this.get('block._state.selectedFormIndex'));
   }),
@@ -37,6 +43,35 @@ polarity.export = PolarityComponent.extend({
     }
 
     console.info('showCustomRecipient: false 4');
+    return false;
+  }),
+  showCustomCc: Ember.computed('block._state.selectedFormIndex', 'forms.@each._selectedCc', function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    console.info('Form Index: ' + selectedFormIndex);
+    let _selectedCc = this.get(`forms.${selectedFormIndex}._selectedCc`);
+    console.info('showCustomCc ' + _selectedCc);
+    // no recipient domains specified for the form so we never show custom recipient input
+    if (!this.selectedFormHasCcDomains) {
+      console.info('showCustomCc: false 1');
+      return false;
+    }
+
+    // recipient domains are specified and no multi-recipient is specified
+    if (this.selectedFormHasCcDomains && !this.selectedFormHasMultipleCc) {
+      console.info('showCustomCc: true 2');
+      return true;
+    }
+
+    if (
+        this.selectedFormHasMultipleCc &&
+        this.selectedFormHasCcDomains &&
+        _selectedCc === 'custom'
+    ) {
+      console.info('showCustomCc: true 3');
+      return true;
+    }
+
+    console.info('showCustomCc: false 4');
     return false;
   }),
   isExpanded: true,
@@ -84,6 +119,14 @@ polarity.export = PolarityComponent.extend({
   hasMultipleRecipients(selectedFormIndex) {
     let recipient = this.get(`forms.${selectedFormIndex}.recipient`);
     return Array.isArray(recipient);
+  },
+  hasMultipleCc(selectedFormIndex) {
+    let cc = this.get(`forms.${selectedFormIndex}.cc`);
+    return Array.isArray(cc);
+  },
+  hasCcDomains(selectedFormIndex) {
+    let ccDomains = this.get(`forms.${selectedFormIndex}.ccDomains`);
+    return Array.isArray(ccDomains);
   },
   getIntegrationData() {
     let entityData = [];
@@ -154,6 +197,35 @@ polarity.export = PolarityComponent.extend({
       }
     }
 
+    if (
+        (this.hasMultipleCc(selectedFormIndex) &&
+            this.get(`forms.${selectedFormIndex}._selectedCc`) === 'custom') ||
+        (this.hasCcDomains(selectedFormIndex) && !this.hasMultipleCc(selectedFormIndex))
+    ) {
+      if (this.hasCcDomains(selectedFormIndex) && !form._customCc) {
+        this.set(`forms.${selectedFormIndex}._ccDomainError`, `Cc is a required field.`);
+        valid = false;
+      }
+
+      if (
+          this.hasCcDomains(selectedFormIndex) &&
+          form._customCc &&
+          form._customCc.indexOf(' ') >= 0
+      ) {
+        this.set(`forms.${selectedFormIndex}._ccDomainError`, `Cc cannot contain spaces.`);
+        valid = false;
+      }
+
+      if (
+          this.hasCcDomains(selectedFormIndex) &&
+          form._customCc &&
+          form._customCc.indexOf('@') >= 0
+      ) {
+        this.set(`forms.${selectedFormIndex}._ccDomainError`, `Cc cannot contain an "at" (@) sign.`);
+        valid = false;
+      }
+    }
+
     form.elements.forEach((element, elementIndex) => {
       if (element.required && !element.value) {
         this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, `${element.label} is a required field.`);
@@ -178,7 +250,8 @@ polarity.export = PolarityComponent.extend({
     let form = this.get(`forms.${selectedFormIndex}`);
 
     this.set(`forms.${selectedFormIndex}._recipientDomainError`, '');
-
+    this.set(`forms.${selectedFormIndex}._ccDomainError`, '');
+    
     form.elements.forEach((element, elementIndex) => {
       this.set(`forms.${selectedFormIndex}.elements.${elementIndex}.error`, '');
     });
@@ -206,7 +279,6 @@ polarity.export = PolarityComponent.extend({
 
     if (this.selectedFormHasMultipleRecipients) {
       let dynamicRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
-      let _selectedRecipient = this.get(`forms.${selectedFormIndex}._selectedRecipient`);
 
       if (!dynamicRecipient) {
         dynamicRecipient = this.get(`forms.${selectedFormIndex}.recipient.0`);
@@ -225,6 +297,34 @@ polarity.export = PolarityComponent.extend({
         selectedDomain = this.get(`forms.${selectedFormIndex}.recipientDomains.0`);
       }
       return `${customRecipient}@${selectedDomain}`;
+    }
+
+    return null;
+  },
+  getCc: function () {
+    let selectedFormIndex = this.get('block._state.selectedFormIndex');
+    let customCc = this.get(`forms.${selectedFormIndex}._customCc`);
+
+    if (this.selectedFormHasMultipleCc) {
+      let dynamicCc = this.get(`forms.${selectedFormIndex}._selectedCc`);
+
+      if (!dynamicCc) {
+        dynamicCc = this.get(`forms.${selectedFormIndex}.cc.0`);
+      }
+
+      // If the recipient is set to custom we don't return it, instead we move to the next
+      // if statement which pulls the recipient information from the custom recipient input
+      if (dynamicCc !== 'custom') {
+        return dynamicCc;
+      }
+    }
+
+    if (this.selectedFormHasRecipientCc && customCc) {
+      let selectedDomain = this.get(`forms.${selectedFormIndex}._selectedCcDomain`);
+      if (!selectedDomain) {
+        selectedDomain = this.get(`forms.${selectedFormIndex}.ccDomains.0`);
+      }
+      return `${customCc}@${selectedDomain}`;
     }
 
     return null;
@@ -253,6 +353,7 @@ polarity.export = PolarityComponent.extend({
       action: 'SUBMIT_TASKING',
       entity: this.get('block.entity.value'),
       recipient: this.getRecipient(),
+      cc: this.getCc(),
       integrationData: this.getIntegrationData(),
       fileName: this.get(`forms.${selectedFormIndex}.fileName`),
       formName: this.get(`forms.${selectedFormIndex}.name`),

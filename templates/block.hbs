@@ -53,6 +53,8 @@
           {{/if}}
         </div>
       {{/if}}
+      
+      {{!-- Form Recipient Fields --}}
       {{#if selectedFormHasMultipleRecipients}}
         <div class="input-container">
           <label class="small ifta-label">Recipient</label>
@@ -119,6 +121,76 @@
         </div>
 
       {{/if}}
+      
+      {{!-- Form CC Fields --}}
+      {{#if selectedFormHasMultipleCc}}
+        <div class="input-container">
+          <label class="small ifta-label">Cc</label>
+          <select
+                  class="ifta-field"
+            {{on "change" (pick "target.value" (set selectedForm "_selectedCc"))}}
+                  disabled={{block._state.isSending}}
+          >
+            {{#each selectedForm.cc as | cc |}}
+              <option value="{{cc}}" selected={{if (eq cc selectedForm._selectedCc) true}}>
+                {{cc}}
+              </option>
+            {{/each}}
+            {{#if selectedFormHasCcDomains}}
+              <option class="custom-recipient-option" value="custom" selected={{if (eq "custom" selectedForm._selectedCc) true}}>
+                -- Provide your own email Cc
+              </option>
+            {{/if}}
+          </select>
+          {{fa-icon icon="chevron-down" fixedWidth=true class="select-arrow"}}
+        </div>
+      {{/if}}
+      {{#if showCustomCc}}
+        <div class="input-container">
+          <label class="small ifta-label">
+            Cc
+            <span class="required">*</span>
+          </label>
+          <div class="email-input-container d-flex align-items-center justify-content-between {{if selectedForm._recipientCcError "error"}}">
+            {{input
+                    class="ifta-field"
+                    value=selectedForm._customCc
+                    disabled=block._state.isSending
+                    required=true
+            }}
+            <div class="at-sign-container">
+              @
+            </div>
+            <div class="recipient-domain-container">
+              {{#if (eq selectedForm.ccDomains.length 1)}}
+                <div class="ifta-domain-single">
+                  {{selectedForm.ccDomains.[0]}}
+                </div>
+              {{else}}
+                <select
+                        class="ifta-domain-field"
+                  {{on "change" (pick "target.value" (set selectedForm "_selectedCcDomain"))}}
+                        disabled={{block._state.isSending}}
+                >
+                  {{#each selectedForm.ccDomains as | domain |}}
+                    <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedCcDomain) true}}>
+                      {{domain}}
+                    </option>
+                  {{/each}}
+                </select>
+              {{/if}}
+            </div>
+          </div>
+          {{#if selectedForm._ccDomainError}}
+            <div class="ifta-error-message">
+              {{selectedForm._ccDomainError}}
+            </div>
+          {{/if}}
+        </div>
+
+      {{/if}}
+      
+      {{!-- Form UI Elements --}}
       {{#each selectedForm.elements as | uiElement |}}
         {{#if (eq uiElement.type "input")}}
           <div class="input-container">
