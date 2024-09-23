@@ -169,7 +169,7 @@ function getCc(fileName, cc) {
 
 function getEmailSubject(fileName) {
   if (formsByFileName[fileName] && formsByFileName[fileName].subject) {
-    Logger.info({ fileName, subject: formsByFileName[fileName].subject }, 'Using custom subject');
+    Logger.trace({ fileName, subject: formsByFileName[fileName].subject }, 'Using custom subject');
     return formsByFileName[fileName].subject;
   } else {
     return 'Polarity Form Submission';
