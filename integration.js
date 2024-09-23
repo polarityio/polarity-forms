@@ -157,11 +157,13 @@ function getRecipient(fileName, recipient, options) {
   }
 }
 
-function getCc(fileName, cc) {
+function getCc(fileName, cc, options) {
   if (cc) {
     return cc;
   } else if (formsByFileName[fileName] && formsByFileName[fileName].cc) {
     return formsByFileName[fileName].cc;
+  } else if (options.cc.trim().length > 0) {
+    return options.cc.trim();
   } else {
     return '';
   }

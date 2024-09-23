@@ -136,6 +136,16 @@ module.exports = {
       adminOnly: true
     },
     {
+      key: 'cc',
+      name: 'Default CC Email Address',
+      description:
+        'The default email address to CC form submissions to if a form configuration does not specify a CC.  If left blank, no CC will be sent.',
+      default: '',
+      type: 'text',
+      userCanEdit: false,
+      adminOnly: true
+    },
+    {
       key: 'forms',
       name: 'Enabled Forms',
       description:
