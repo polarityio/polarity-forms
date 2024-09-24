@@ -199,7 +199,7 @@ async function sendEmail(template, user, fileName, recipient, cc, options) {
     text: template.text,
     from: options.sender.length > 0 ? options.sender : `"${user.fullName}" <${user.email}>`,
     to: getRecipient(fileName, recipient, options),
-    cc: getCc(fileName, cc),
+    cc: getCc(fileName, cc, options),
     subject: template.subject,
     html: template.html
   };
