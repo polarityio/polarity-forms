@@ -1,0 +1,52 @@
+{
+  "name": "Detection Rule Feedback",
+  "description": "Submit Feedback on an Existing Rule",
+  "subject": "Detection Rule Feedback",
+  "elements": [
+    {
+      "label": "Detection Rule Feedback",
+      "type": "select",
+      "values": [
+        "False Positives (ie. triggering incorrectly)",
+        "False Negatives (ie. not triggering)",
+        "Expand Detection (ie. trigger more often)",
+        "Other"
+      ],
+      "default": "False Positives (ie. triggering incorrectly)",
+      "description": "Select your feedback.",
+      "required": true
+    },
+    {
+      "label": "Detection System",
+      "type": "input",
+      "description": "Enter System that Runs the Detection (eg. Firewall, NIDS, AV, etc.).",
+      "required": true
+    },
+    {
+      "label": "Enter Rule Reference / ID",
+      "type": "input",
+      "description": "Enter the Unique Rule Reference or ID Number.",
+      "required": true
+    },
+    {
+      "label": "Current Rule Reliability Assessment",
+      "type": "select",
+      "values": [
+        " - ",
+        "Largely Reliable",
+        "Sometimes Reliable",
+        "Less Reliable",
+        "Not Reliable"
+      ],
+      "description": "Assess if an Alert from the Rule is Reliably Actionable."
+    },
+    {
+      "label": "Justification",
+      "type": "textarea",
+      "placeholder": "Add comments supporting your feedback",
+      "description": "Enter a Justification or Reason for your Feedback.",
+      "required": true,
+      "rows": 10
+    }
+  ]
+}
