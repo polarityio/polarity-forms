@@ -162,7 +162,7 @@ function getCc(fileName, cc, options) {
     return cc;
   } else if (formsByFileName[fileName] && formsByFileName[fileName].cc) {
     return formsByFileName[fileName].cc;
-  } else if (options.cc.trim().length > 0) {
+  } else if (options && options.cc && options.cc.trim().length > 0) {
     return options.cc.trim();
   } else {
     return '';
