@@ -4,7 +4,7 @@
   "acronym": "FORM",
   "description": "Display customized forms to users for gathering user feedback or input.",
   "logging": {
-    "level": "info"
+    "level": "trace"
   },
   "styles": ["./styles/style.less"],
   "supportsAdditionalCustomTypes": true,

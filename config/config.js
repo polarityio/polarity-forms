@@ -6,7 +6,7 @@ module.exports = {
     level: 'info' //trace, debug, info, warn, error, fatal
   },
   styles: ['./styles/style.less'],
-  entityTypes: ['domain', 'IPv4', 'IPv6', 'IPv4CIDR', 'email', 'MD5', 'SHA1', 'SHA256', 'cve', 'url'],
+  entityTypes: ['domain', 'IPv4', 'IPv6', 'IPv4CIDR', 'email', 'MD5', 'SHA1', 'SHA256', 'cve', 'url', 'string'],
   defaultColor: 'light-gray',
   block: {
     component: {

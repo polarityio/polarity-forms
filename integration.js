@@ -78,17 +78,25 @@ function doLookup(entities, options, cb) {
   }
 
   let lookupResults = [];
+  const mitreRegex = "/T[Aa][0-9]+(\.[0-9]{0,3})?|\bT[0-9]+(\.[0-9]{0,3})?\b/"; 
+
 
   entities.forEach((entityObj) => {
     if (!options.privateIpOnly || (options.privateIpOnly && entityObj.isIP && entityObj.isPrivateIP)) {
+      Logger.trace(`Trying to match: ${entityObj.value}`)
+      const matches = entityObj.value.match(mitreRegex); // Aplicăm regex-ul
+      Logger.trace({matches}, "These are the matches")
+      let mitreTechniques = matches ? matches : []; // Colectăm tehnicile găsite
+
       lookupResults.push({
         entity: entityObj,
         isVolatile: true,
         data: {
-          summary: [options.summaryTag],
+          summary: [options.summaryTag].concat(mitreTechniques), // Adăugăm tehnicile în rezumat
           details: {
             target: entityObj.value,
-            forms
+            forms,
+            mitreTechniques // Adăugăm tehnicile găsite în detalii
           }
         }
       });

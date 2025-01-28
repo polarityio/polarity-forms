@@ -15,6 +15,7 @@
 *.project
 *.classpath
 dependency-reduced-pom.xml
+legacy_wrapper.js
 
 
 # Ignore Excel Files
