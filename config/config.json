@@ -10,6 +10,12 @@
   "supportsAdditionalCustomTypes": true,
   "dataTypes": ["domain", "IPv4", "IPv6", "IPv4CIDR", "email", "MD5", "SHA1", "SHA256", "cve", "url"],
   "entityTypes": ["domain", "IPv4", "IPv6", "IPv4CIDR", "email", "MD5", "SHA1", "SHA256", "cve", "url"],
+  "customTypes": [
+    {
+      "key": "MITREregex",
+      "regex": "T[Aa][0-9]+(\\.[0-9]{0,3})?|\\bT[0-9]+(\\.[0-9]{0,3})?\\b"
+    }
+  ],
   "defaultColor": "light-gray",
   "block": {
     "component": {

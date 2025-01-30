@@ -3,7 +3,8 @@
     {{#if isExpanded}}
       hide form{{fa-icon icon="chevron-up" fixedWidth=true}}
     {{else}}
-      show form {{fa-icon icon="chevron-down" fixedWidth=true}}
+      show form
+      {{fa-icon icon="chevron-down" fixedWidth=true}}
     {{/if}}
   </div>
   {{#if (not isExpanded)}}
@@ -13,10 +14,10 @@
   {{/if}}
 </div>
 
-{{!--
+{{!
    Multiple forms have been selected so we enable a drop down list to allow
    the user to pick an interface to fill
---}}
+}}
 
 <div class="integration-container {{if isExpanded 'visible' 'hidden'}}">
   {{#if (gt forms.length 1)}}
@@ -27,7 +28,7 @@
         {{on "change" (pick "target.value" (set block "_state.selectedFormIndex"))}}
         disabled={{block._state.isSending}}
       >
-        {{#each forms as | form formIndex |}}
+        {{#each forms as |form formIndex|}}
           <option value="{{formIndex}}">
             {{form.name}}
           </option>
@@ -38,7 +39,7 @@
   {{/if}}
 
   <div class="form-container">
-    {{#let (get forms block._state.selectedFormIndex) as | selectedForm |}}
+    {{#let (get forms block._state.selectedFormIndex) as |selectedForm|}}
       {{#if (or selectedForm.description selectedForm.name)}}
         <div class="mb-2_5">
           {{#if selectedForm.name}}
@@ -53,8 +54,8 @@
           {{/if}}
         </div>
       {{/if}}
-      
-      {{!-- Form Recipient Fields --}}
+
+      {{! Form Recipient Fields }}
       {{#if selectedFormHasMultipleRecipients}}
         <div class="input-container">
           <label class="small ifta-label">Recipient</label>
@@ -63,13 +64,17 @@
             {{on "change" (pick "target.value" (set selectedForm "_selectedRecipient"))}}
             disabled={{block._state.isSending}}
           >
-            {{#each selectedForm.recipient as | recipient |}}
+            {{#each selectedForm.recipient as |recipient|}}
               <option value="{{recipient}}" selected={{if (eq recipient selectedForm._selectedRecipient) true}}>
                 {{recipient}}
               </option>
             {{/each}}
             {{#if selectedFormHasRecipientDomains}}
-              <option class="custom-recipient-option" value="custom" selected={{if (eq "custom" selectedForm._selectedRecipient) true}}>
+              <option
+                class="custom-recipient-option"
+                value="custom"
+                selected={{if (eq "custom" selectedForm._selectedRecipient) true}}
+              >
                 -- Provide your own email recipient
               </option>
             {{/if}}
@@ -83,7 +88,10 @@
             Recipient
             <span class="required">*</span>
           </label>
-          <div class="email-input-container d-flex align-items-center justify-content-between {{if selectedForm._recipientDomainError "error"}}">
+          <div
+            class="email-input-container d-flex align-items-center justify-content-between
+              {{if selectedForm._recipientDomainError 'error'}}"
+          >
             {{input
               class="ifta-field"
               value=selectedForm._customRecipient
@@ -104,7 +112,7 @@
                   {{on "change" (pick "target.value" (set selectedForm "_selectedRecipientDomain"))}}
                   disabled={{block._state.isSending}}
                 >
-                  {{#each selectedForm.recipientDomains as | domain |}}
+                  {{#each selectedForm.recipientDomains as |domain|}}
                     <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedRecipientDomain) true}}>
                       {{domain}}
                     </option>
@@ -121,23 +129,27 @@
         </div>
 
       {{/if}}
-      
-      {{!-- Form CC Fields --}}
+
+      {{! Form CC Fields }}
       {{#if selectedFormHasMultipleCc}}
         <div class="input-container">
           <label class="small ifta-label">Cc</label>
           <select
-                  class="ifta-field"
+            class="ifta-field"
             {{on "change" (pick "target.value" (set selectedForm "_selectedCc"))}}
-                  disabled={{block._state.isSending}}
+            disabled={{block._state.isSending}}
           >
-            {{#each selectedForm.cc as | cc |}}
+            {{#each selectedForm.cc as |cc|}}
               <option value="{{cc}}" selected={{if (eq cc selectedForm._selectedCc) true}}>
                 {{cc}}
               </option>
             {{/each}}
             {{#if selectedFormHasCcDomains}}
-              <option class="custom-recipient-option" value="custom" selected={{if (eq "custom" selectedForm._selectedCc) true}}>
+              <option
+                class="custom-recipient-option"
+                value="custom"
+                selected={{if (eq "custom" selectedForm._selectedCc) true}}
+              >
                 -- Provide your own email Cc
               </option>
             {{/if}}
@@ -151,13 +163,11 @@
             Cc
             <span class="required">*</span>
           </label>
-          <div class="email-input-container d-flex align-items-center justify-content-between {{if selectedForm._recipientCcError "error"}}">
-            {{input
-                    class="ifta-field"
-                    value=selectedForm._customCc
-                    disabled=block._state.isSending
-                    required=true
-            }}
+          <div
+            class="email-input-container d-flex align-items-center justify-content-between
+              {{if selectedForm._recipientCcError 'error'}}"
+          >
+            {{input class="ifta-field" value=selectedForm._customCc disabled=block._state.isSending required=true}}
             <div class="at-sign-container">
               @
             </div>
@@ -168,11 +178,11 @@
                 </div>
               {{else}}
                 <select
-                        class="ifta-domain-field"
+                  class="ifta-domain-field"
                   {{on "change" (pick "target.value" (set selectedForm "_selectedCcDomain"))}}
-                        disabled={{block._state.isSending}}
+                  disabled={{block._state.isSending}}
                 >
-                  {{#each selectedForm.ccDomains as | domain |}}
+                  {{#each selectedForm.ccDomains as |domain|}}
                     <option value="{{domain}}" selected={{if (eq domain selectedForm._selectedCcDomain) true}}>
                       {{domain}}
                     </option>
@@ -189,9 +199,9 @@
         </div>
 
       {{/if}}
-      
-      {{!-- Form UI Elements --}}
-      {{#each selectedForm.elements as | uiElement |}}
+
+      {{! Form UI Elements }}
+      {{#each selectedForm.elements as |uiElement|}}
         {{#if (eq uiElement.type "input")}}
           <div class="input-container">
             <label class="small ifta-label">
@@ -209,7 +219,11 @@
             }}
           </div>
         {{else if (eq uiElement.type "textarea")}}
-          <div class="input-container text-area-container {{if block._state.isSending "disabled"}} {{if uiElement.error "error"}}">
+          <div
+            class="input-container text-area-container
+              {{if block._state.isSending 'disabled'}}
+              {{if uiElement.error 'error'}}"
+          >
             <label class="small">
               {{uiElement.label}}
               {{#if uiElement.required}}
@@ -226,7 +240,7 @@
             }}
           </div>
         {{else if (eq uiElement.type "select")}}
-          <div class="input-container {{if uiElement.error "error"}}">
+          <div class="input-container {{if uiElement.error 'error'}}">
             {{!--
             <div>
               Default: {{uiElement.default}}
@@ -242,12 +256,12 @@
               {{/if}}
             </label>
             <select
-              class="ifta-field {{if uiElement.error "error"}}"
+              class="ifta-field {{if uiElement.error 'error'}}"
               {{on "change" (pick "target.value" (set uiElement "value"))}}
               required={{if uiElement.required true false}}
               disabled={{block._state.isSending}}
             >
-              {{#each uiElement.values as | value |}}
+              {{#each uiElement.values as |value|}}
                 <option value="{{value}}" selected={{if (eq value uiElement.default) true}}>{{value}}</option>
               {{/each}}
             </select>
@@ -271,7 +285,7 @@
                 {{uiElement.label}}
               </label>
             {{/if}}
-            {{#each uiElement.links as | link |}}
+            {{#each uiElement.links as |link|}}
               <div class="link">
                 <a href="{{link.href}}" target="_blank">
                   {{#if link.beforeIcon}}
@@ -291,7 +305,7 @@
             {{{uiElement.description}}}
           </div>
         {{/if}}
-    {{/each}}
+      {{/each}}
     {{/let}}
   </div>
 
@@ -320,12 +334,8 @@
       {{/if}}
       {{statusMessage}}
     </div>
-    {{!-- send RFI button --}}
-    <button
-      {{action "sendTasking"}}
-      class="p-btn btn btn-sm btn-light mt-1"
-      disabled={{block._state.isSending}}
-    >
+    {{! send RFI button }}
+    <button {{action "sendTasking"}} class="p-btn btn btn-sm btn-light mt-1" disabled={{block._state.isSending}}>
       {{#if block._state.isSending}}
         {{fa-icon icon="spinner-third" fixedWidth=true spin=true}}
       {{else}}
@@ -335,4 +345,3 @@
     </button>
   </div>
 </div>
-
