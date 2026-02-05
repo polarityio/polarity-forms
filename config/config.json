@@ -6,10 +6,34 @@
   "logging": {
     "level": "info"
   },
-  "styles": ["./styles/style.less"],
+  "styles": [
+    "./styles/style.less"
+  ],
   "supportsAdditionalCustomTypes": true,
-  "dataTypes": ["domain", "IPv4", "IPv6", "IPv4CIDR", "email", "MD5", "SHA1", "SHA256", "cve", "url"],
-  "entityTypes": ["domain", "IPv4", "IPv6", "IPv4CIDR", "email", "MD5", "SHA1", "SHA256", "cve", "url"],
+  "dataTypes": [
+    "domain",
+    "IPv4",
+    "IPv6",
+    "IPv4CIDR",
+    "email",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "cve",
+    "url"
+  ],
+  "entityTypes": [
+    "domain",
+    "IPv4",
+    "IPv6",
+    "IPv4CIDR",
+    "email",
+    "MD5",
+    "SHA1",
+    "SHA256",
+    "cve",
+    "url"
+  ],
   "defaultColor": "light-gray",
   "block": {
     "component": {
@@ -174,5 +198,10 @@
       "userCanEdit": true,
       "adminOnly": false
     }
-  ]
+  ],
+  "reducer": {
+    "details": {
+      "file": "./reducers/details.json"
+    }
+  }
 }

@@ -1,0 +1,21 @@
+{
+  "root": {
+    "path": "",
+    "on_null": "return_empty"
+  },
+  "pipeline": [
+    {
+      "op": "copy",
+      "from": "target",
+      "to": "reduced_results.target"
+    },
+    {
+      "op": "copy",
+      "from": "forms",
+      "to": "reduced_results.forms"
+    }
+  ],
+  "output": {
+    "result": "$working.reduced_results"
+  }
+}

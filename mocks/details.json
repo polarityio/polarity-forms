@@ -1,0 +1,140 @@
+{
+  "target": "192.168.1.100",
+  "forms": [
+    {
+      "name": "Request for Information (RFI)",
+      "subject": "Polarity -- RFI Received",
+      "description": "Submit a request for additional information on this indicator.",
+      "recipient": ["soc@company.internal"],
+      "recipientDomains": ["company.internal"],
+      "cc": ["manager@company.internal"],
+      "ccDomains": ["company.internal"],
+      "elements": [
+        {
+          "label": "Request Type",
+          "type": "select",
+          "values": [
+            "OSINT Analysis",
+            "Clarification",
+            "Threat Assessment"
+          ],
+          "default": "OSINT Analysis",
+          "required": true,
+          "description": "Select the type of information request"
+        },
+        {
+          "label": "Priority",
+          "type": "select",
+          "values": [
+            "Low - 24 hours",
+            "Medium - 8 hours",
+            "High - 4 hours",
+            "Urgent - 1 hour"
+          ],
+          "default": "Low - 24 hours",
+          "required": true
+        },
+        {
+          "label": "RFI Details",
+          "type": "textarea",
+          "placeholder": "Provide additional details about the RFI",
+          "required": true,
+          "rows": 10
+        }
+      ]
+    },
+    {
+      "name": "Threat Detection Feedback",
+      "description": "Submit feedback on a detection or alert.",
+      "elements": [
+        {
+          "label": "Detection Status",
+          "type": "select",
+          "values": [
+            "True Positive",
+            "False Positive",
+            "Benign Positive",
+            "Unknown"
+          ],
+          "default": "Unknown",
+          "required": true
+        },
+        {
+          "label": "Analyst Name",
+          "type": "input",
+          "default": "",
+          "placeholder": "Enter your name",
+          "description": "Name of the analyst providing feedback"
+        },
+        {
+          "label": "Additional Context",
+          "type": "block",
+          "text": "Please provide as much detail as possible to help improve future detections. Include relevant IOCs, TTPs, or related incidents."
+        },
+        {
+          "label": "Feedback Details",
+          "type": "textarea",
+          "placeholder": "Describe your analysis and findings",
+          "description": "Detailed explanation of the detection review",
+          "required": true,
+          "rows": 15
+        },
+        {
+          "label": "Related Resources",
+          "type": "links",
+          "links": [
+            {
+              "text": "MITRE ATT&CK",
+              "href": "https://attack.mitre.org",
+              "afterIcon": "external-link-square"
+            },
+            {
+              "text": "Submit Ticket",
+              "href": "mailto:soc@company.internal",
+              "afterIcon": "envelope"
+            }
+          ],
+          "description": "Useful references for detection analysis"
+        }
+      ]
+    },
+    {
+      "name": "Technical Support Request",
+      "subject": "Polarity Support Request",
+      "description": "Submit a technical support request.",
+      "elements": [
+        {
+          "label": "Issue Category",
+          "type": "select",
+          "values": [
+            "Integration Error",
+            "Performance Issue",
+            "Feature Request",
+            "Bug Report",
+            "Configuration Help"
+          ],
+          "required": true
+        },
+        {
+          "label": "Severity",
+          "type": "select",
+          "values": [
+            "Critical - System Down",
+            "High - Major Impact",
+            "Medium - Limited Impact",
+            "Low - Minor Issue"
+          ],
+          "default": "Medium - Limited Impact",
+          "required": true
+        },
+        {
+          "label": "Issue Description",
+          "type": "textarea",
+          "placeholder": "Describe the issue in detail",
+          "required": true,
+          "rows": 12
+        }
+      ]
+    }
+  ]
+}
